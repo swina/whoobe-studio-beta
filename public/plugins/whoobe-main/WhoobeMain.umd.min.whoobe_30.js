@@ -1,0 +1,1 @@
+(("undefined"!==typeof self?self:this)["webpackJsonpWhoobeMain"]=("undefined"!==typeof self?self:this)["webpackJsonpWhoobeMain"]||[]).push([[11],{1599:function(e,a,t){"use strict";t.r(a);var i={buy:"Acquista",add_to_cart:"Aggiungi al carrello",checkout:"Vai alla cassa",detail:"Dettaglio"};a["default"]=i}}]);

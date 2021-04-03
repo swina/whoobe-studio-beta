@@ -1,0 +1,1 @@
+.slideout{transform:scaleX(0);opacity:.5;transform-origin:top left;transform-style:preserve-3D}.slidein,.slideout{transition:transform .4s linear}.slidein{transform:scaleX(1);transform-origin:top right;transform-style:preserve-3D}

@@ -1,0 +1,19 @@
+<meta charset="utf-8">
+<title>Snipcart demo</title>
+<script src="https://unpkg.com/vue"></script>
+<script src="./Snipcart.umd.js"></script>
+
+<link rel="stylesheet" href="./Snipcart.css">
+
+
+<div id="app">
+  <demo></demo>
+</div>
+
+<script>
+new Vue({
+  components: {
+    demo: Snipcart
+  }
+}).$mount('#app')
+</script>

@@ -1,0 +1,19 @@
+<meta charset="utf-8">
+<title>WhoobeStore demo</title>
+<script src="https://unpkg.com/vue"></script>
+<script src="./WhoobeStore.umd.js"></script>
+
+<link rel="stylesheet" href="./WhoobeStore.css">
+
+
+<div id="app">
+  <demo></demo>
+</div>
+
+<script>
+new Vue({
+  components: {
+    demo: WhoobeStore
+  }
+}).$mount('#app')
+</script>
