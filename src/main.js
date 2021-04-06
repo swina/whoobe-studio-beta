@@ -11,9 +11,12 @@ import api from "./plugins/api";
 
 import vueCustomElement from 'vue-custom-element'
 Vue.use(vueCustomElement);
+
 window.localStorage.setItem('moka-strapiurl','http://localhost:3030/')
+
 import WhoobeStore from './components/plugins/store/nuxpresso/custom'
 Vue.customElement ( 'whoobe-store' , WhoobeStore )
+
 //import MokaPluginWrapper from '@/components/Plugins.Wrapper'
 //Vue.component('moka-plugins-wrapper',MokaPluginWrapper)
 
@@ -32,8 +35,6 @@ Vue.prototype.$http = api
 import VueBlobJsonCsv from 'vue-blob-json-csv'
 Vue.use(VueBlobJsonCsv)
 
-import _ from 'lodash';    
-Object.defineProperty(Vue.prototype, '$_', { value: _ });
 
 import VueDraggableResizable from 'vue-draggable-resizable'
 // optionally import default styles
@@ -51,7 +52,7 @@ Vue.component ( 'MokaCloudinary' , MokaMediaCloudinary)
 
 import VueHtml2Canvas from "vue-html2canvas";
 Vue.use(VueHtml2Canvas);
-console.log ( 'Using Whoobe-CMS => ' , window.localStorage.getItem ( 'moka-strapiurl') || process.env.VUE_APP_API_URL )
+
 import {SimpleSVG} from 'vue-simple-svg'
 Vue.component('simple-svg', SimpleSVG)
 
@@ -60,6 +61,7 @@ import VueFileAgentStyles from 'vue-file-agent/dist/vue-file-agent.css';
 Vue.use ( VueFileAgent )
 //import './registerServiceWorker'
 
+console.log ( 'Using Whoobe-CMS => ' , window.localStorage.getItem ( 'moka-strapiurl') || process.env.VUE_APP_API_URL )
 
 Vue.config.productionTip = false
 

@@ -17,6 +17,9 @@
         </div>
     </transition>
     <moka-loading v-if="moka.loading"/>
+
+    <whoobe-actions></whoobe-actions>
+
     <moka-cloudinary :data="iscloudinary" class="mx-2" v-if="editor.action==='cloudinary'" :config="cloudinary.config" @cloudinary="$action('cloudinaryImage')"/>
     <!--<moka-modal v-if="editor.action && components.hasOwnProperty(editor.action)" @close="$action()">
       <component :is="component" :component="component"/>
@@ -30,6 +33,7 @@ import { mapState } from 'vuex'
 import MokaProjects from '@/components/projects/projects'
 import VuexPersistence from 'vuex-persist'
 import __components from './plugins/components'
+import WhoobeActions from '@/components/moka/editor/whoobe.editor.actions'
 //import SnipCart from './plugins/test' /**TEST FOR EXTERNAL SCRIPT**/
 
 const vuexLocal = new VuexPersistence({
@@ -37,7 +41,7 @@ const vuexLocal = new VuexPersistence({
 })
 export default {
   name: 'App',
-  components: { MokaProjects },
+  components: { MokaProjects , WhoobeActions },
   data:()=>({
     message: '',
     firstRun: false,

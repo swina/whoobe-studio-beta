@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute text-xs font-sans w-full overflow-y-auto p-2">
+    <div class="relative bg-gray-700 max-h-screen pb-20 text-gray-500 cursor-pointer text-xs font-sans w-full overflow-y-auto p-2">
         <!--<i class="material-icons absolute top-0 right-0 m-1" @click="$emit('close')">close</i>-->
         <div class="items-center flex flex-row" @click="doc=editor.component.json">
             <i class="material-icons" @click="doc=editor.component.json">web</i> Root

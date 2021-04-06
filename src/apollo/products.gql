@@ -1,9 +1,0 @@
-query Products ( $start: Int , $limit: Int $sort : String ) {
-  products ( start: $start , limit: $limit , sort: $sort ) {
-        id
-        code
-        name
-        price
-        image_uri
-    }
-}

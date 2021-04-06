@@ -229,7 +229,7 @@ export default {
       return "opacity-0";
     },
     selectComponent(id, action, component) {
-      console.log(id);
+      
       this.$emit(action, component);
       return;
       this.$http.get("components/" + id).then((result) => {

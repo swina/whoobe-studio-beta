@@ -7,6 +7,7 @@ import Moka from '@/views/Moka.vue'
 import Logout from '@/views/Logout.vue'
 import Preview from '@/components/moka/moka.window.preview'
 import Desktop from '@/views/Desktop'
+import ImageEditor from '@/components/media/editor/whoobe.filerobot'
 Vue.use(VueRouter)
 
 const routes = [
@@ -45,7 +46,11 @@ const routes = [
     name: 'Preview',
     component: Preview
   },
-  
+  {
+    path: '/imageeditor',
+    name: 'Image Editor',
+    component: ImageEditor
+  },
   {
     path: '/component/:path',
     name: 'Component',

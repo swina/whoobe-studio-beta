@@ -1,7 +1,7 @@
 <template>
     <div editor-container class="w-screen relative">
         <div class="w-full" v-if="!preview">
-            <moka-editor v-if="component" 
+            <whoobe-editor v-if="component" 
 
                 :component="component" 
                 :blocks="$attrs.blocks ? $attrs.blocks : component.json" 
@@ -10,6 +10,16 @@
                 @preview="preview=!preview" 
                 @saveasreusable="saveAsReusable"
                 @createpage="createPage"/>
+
+            <!--<moka-editor v-if="component" 
+
+                :component="component" 
+                :blocks="$attrs.blocks ? $attrs.blocks : component.json" 
+                @save="save"  
+                @savecopy="saveAsNew=!saveAsNew" 
+                @preview="preview=!preview" 
+                @saveasreusable="saveAsReusable"
+                @createpage="createPage"/>-->
         </div>
 
         
@@ -43,12 +53,14 @@
 </template>
 
 <script>
-import MokaEditor from '@/components/editor/render/moka.editor.main'
+//import MokaEditor from '@/components/editor/render/moka.editor.main'
+import WhoobeEditor from './editor/whoobe.editor'
 import MokaPreview from '@/components/editor/preview/moka.preview'
 import { mapState } from 'vuex'
 export default {
     name: 'WhoobeMain',
-    components: { MokaEditor, MokaPreview  },
+    //components: { MokaEditor, MokaPreview  },
+    components: { WhoobeEditor , MokaPreview },
     data:()=>({
         loading: false,
         component: null,
@@ -73,7 +85,7 @@ export default {
         },
     },
     mounted(){
-        this.component = this.$store.getters.component
+        this.component = this.editor.component //this.$store.getters.component
         //if ( process.env.NODE_ENV === 'development' ){
         //    this.$http.defaults.headers.common = {
         //        'Authorization': window.localStorage.getItem('nuxpresso-jwt')

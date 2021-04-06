@@ -129,13 +129,13 @@
         </div>
       </transition>
       <transition name="slideright">
-        <!-- <div class="nuxpresso-modal z-2xtop w-2/3  h-2/3 shadow-xl border rounded p-2" v-if="edit"> -->
         <moka-modal
           v-if="edit"
           type="vertical"
           :size="modalSize"
           height="screen"
-          position="top-right"
+          position="modal-top-right"
+          :fixed="true"
           buttons="none"
           @close="(edit = !edit), (fullscreen = false)"
         >
@@ -169,12 +169,14 @@
       <transition name="fade">
           <moka-modal
             size="lg"
+            :fixed="true"
+            position="modal"
             buttons="none"
             v-if="selectThumbnail"
             @close="selectThumbnail=!selectThumbnail">
             <div slot="title">{{selectedImage.name}}</div>
             <div slot="content">
-                <moka-media-format :selectedImage="selectedImage" @image="assignImg"></moka-media-format>
+                <moka-media-format :selectedImage="selectedImage" @image="assignImg" @close="$action()"></moka-media-format>
             </div>
           </moka-modal>
         <!--
@@ -286,6 +288,7 @@
         </div>
       </transition>
       <!-- IMAGE FROM URL -->
+<!--       
       <transition name="fade">
         <moka-modal
           size="md"
@@ -309,7 +312,7 @@
             </div>
           </div>
         </moka-modal>
-      </transition>
+      </transition> -->
       <!--<template v-for="img in images">
             <img :src="'/img/' + img.name" class="w-24"/>
         </template>-->
@@ -326,6 +329,7 @@
         @input="emitImage"
       />
     </div>
+    
   </div>
 </template>
 
@@ -333,11 +337,12 @@
 import MokaUpload from "@/components/media/media.upload"
 import MokaEditMedia from "@/components/media/media.edit"
 import MokaMediaFormat from './media.select.format'
+import WhoobeEditorActions from '@/components/moka/editor/whoobe.editor.actions'
 //import MokaCloudinaryUpload from '@/components/plugins/cloudinary/cloudinary.widget'
 import { mapState } from "vuex";
 export default {
   name: "MokaMedia",
-  components: { MokaUpload, MokaEditMedia , MokaMediaFormat }, //, MokaCloudinaryUpload },
+  components: { MokaUpload, MokaEditMedia , MokaMediaFormat , WhoobeEditorActions }, //, MokaCloudinaryUpload },
   data: () => ({
     selected: null,
     search: "",
@@ -373,6 +378,14 @@ export default {
     },
   },
   watch: {
+    imageURL(v){
+        window.localStorage.setItem('whoobe-image-url',v)
+        v ? this.$action('media_from_url') : null
+    },
+    unsplash(v){
+        window.localStorage.setItem('whoobe-image-url','https://source.unsplash.com/' + v)
+        v ? this.$action('media_from_url') : null
+    },
     start(v) {
       console.log(v);
       this.$api
@@ -405,7 +418,9 @@ export default {
     },
     setImage(img) {
       if (this.$attrs.filter && this.$attrs.filter === "manager") {
-        this.edit = true;
+        //this.edit = true;
+        window.localStorage.setItem('whoome-media-image',JSON.stringify(img))
+        this.$action('media_edit')
         return;
       } else {
         if (img.formats && img.formats.thumbnail) {
@@ -456,7 +471,12 @@ export default {
       delete img.formats;
       console.log(img);
       */
-      this.$emit("newimage", image);
+      if ( this.editor.current.hasOwnProperty('image') ){
+        this.editor.current.image = image
+        this.$action()
+        return
+      }
+      //this.$emit("newimage", image);
       this.$emit("close");
     },
     next() {

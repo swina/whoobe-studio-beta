@@ -2,24 +2,7 @@
     <div editorelement v-if="element" :class="$attrs.develop ? 'relative ' : ''" @dblclick="$emit('editinline',element)" :style="element.style">
             <span :class="'text-xs ' + showid">{{element.id}}</span> 
             
-            <!--<span :class="'relative z-2xtop '" v-if="editor.current && editor.current.id === el.id && editor.current.tag === 'element'">
-                <moka-text-editor v-if="editor.current.tag === 'element' && editor.current.element === 'p'"  v-model="editor.current.content" @close="editContent=!editContent"/>
-                
-                
-                
-            </span>
-            
-            <span v-else>
-                -->
             <moka-inline-editor v-if="(el.tag==='element' || el.type==='button' || el.type==='download' || ( el.tag === 'article' && !el.hasOwnProperty('article') ) )  && el.element !='img' && el.type != 'video' && el.type != 'audio'" :element="el"/>
-            <!--
-            <div  class="relative z-2xtop"  v-if="editor.current && editor.current.id === el.id && editor.current.tag === 'element' && editor.current.element === 'div'">
-                <moka-inline-editor v-if="editor.current && editor.current.tag === 'element' && editor.current.element != 'p'"/>
-            </div>-->
-            <!--<div v-else>-->
-            
-            <!--<component :class="$cssResponsive(el.css)" :is="tag" v-html="el.content" v-if="(el.tag==='element' || el.type==='button' || ( el.tag === 'article' && !el.hasOwnProperty('article') ) )  && el.element !='img' && el.type != 'video' && el.type != 'audio'" :style="stile"></component>
-            -->
             
             <component :is="tag" v-if="el.tag === 'article' && el.hasOwnProperty('article')" v-html="el.article[el.label]"/>
             
@@ -106,7 +89,8 @@
                 </div>
             </nav>
             </transition>
-            <div v-if="$attrs.develop " :class="'absolute border-dashed top-0 left-0 bottom-0 right-0 scale-x-100 scale-y-100 transform z-' + $attrs.level + ' ' + active(el.id,el.css) + ' bg-transparent'" style="min-height:2rem" @click="select(el)" @contextmenu="$contextMenu($event,el,el.element==='menu'?'edit':'customize')">
+            <div v-if="$attrs.develop " :class="'absolute border-dashed top-0 left-0 bottom-0 right-0 scale-x-100 scale-y-100 transform z-' + $attrs.level + ' ' + active(el.id,el.css) + ' bg-transparent'" style="min-height:2rem;" @click="select(el)" @contextmenu="select(el)">
+                <!-- @contextmenu="$contextMenu($event,el,el.element==='menu'?'edit':'customize')"-->
                 <div class="h-2 w-2 absolute top-0 right-0 bg-black rounded-full -m-1" @click="moveUp(el.id)"></div>
                 <div class="h-2 w-2 absolute top-0 left-0 bg-black rounded-full -m-1"></div>
                 <div class="h-2 w-2 absolute bottom-0 right-0 bg-black rounded-full -m-1"></div>
@@ -115,10 +99,14 @@
                     <i class="absolute top-0 right-0 material-icons nuxpresso-icon-circle text-sm text-black -mt-4" @click="$emit('editinline')">{{ el.icon }}</i>-->
                 <div class="absolute bottom-0 left-0 -mb-4 text-xs text-purple-500" v-if="el.gsap && el.gsap.animation">{{ el.gsap.animation }}</div>
             </div>
+            
+            <whoobe-floating-bar 
+                v-if="editor.current && el.id===editor.current.id" 
+                :doc="el" 
+                @moveup="moveUp(el.id)"/>
+            <!--    
              <div v-if="el.id===moka.selected" class="z-top absolute top-0 left-0 -mt-6 h-6 bg-gray-800 text-gray-300 text-xs rounded-2xl items-center flex flex-row">
-                    <!--,$store.dispatch('setParent',$attrs.parent)-->
                     <i class="material-icons text-sm text-lime-400 hover:text-red-500 leading-4 ml-2" @click="toolbar=!toolbar,$action('replaceelement'),$store.dispatch('setParent',$attrs.parent)" title="Replace element">{{ el.icon }}</i>
-                    <!--<i class="material-icons text-sm text-gray-600 hover:text-blue-500 leading-4 mr-2" @click="toolbar=!toolbar" v-if="!toolbar">arrow_right</i>-->
                     <i class="material-icons text-sm hover:text-blue-500 leading-4 ml-2" @click="moveUp(el.id)" title="Move up">expand_less</i>
                     <i class="material-icons text-sm text-gray-600 hover:text-blue-500 leading-4 mr-2" @click="toolbar=!toolbar" v-if="toolbar">arrow_left</i>
                         <div v-if="toolbar||!toolbar" class="flex flex-row items-center">  
@@ -128,11 +116,12 @@
                         <i class="material-icons hover:text-blue-500 text-sm leading-4 mx-2" @click="$action('delete')" title="Delete">delete</i> 
                         </div>
                 </div>
-            
+            -->
     </div>
 </template>
 
 <script>
+import WhoobeFloatingBar from '@/components/moka/editor/components/whoobe.editor.floating.bar'
 import MokaTextEditor from '@/components/editor/render/moka.text.editor'
 import MokaInlineEditor from '@/components/editor/render/moka.editor.inline'
 import MokaPluginWrapper from '@/components/Plugins.Wrapper'
@@ -140,7 +129,7 @@ import { mapState } from 'vuex'
 import jp from 'jsonpath'
 export default {
     name: 'MokaEditorElement',
-    components: { MokaTextEditor , MokaInlineEditor , MokaPluginWrapper },
+    components: { WhoobeFloatingBar , MokaTextEditor , MokaInlineEditor , MokaPluginWrapper },
     data:()=>({
         el: null,
         article: 'article',

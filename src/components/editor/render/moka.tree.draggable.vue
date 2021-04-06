@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute text-xs font-sans w-full overflow-y-auto">
+    <div class="bg-gray-800 relative text-xs font-sans w-full overflow-y-auto">
         <i class="material-icons absolute top-0 right-0 m-1" @click="$emit('close')">close</i>
         <div class="items-center flex flex-row" @click="current=null,$emit('treeroot')">
             <i class="material-icons">web</i> Root
@@ -28,7 +28,6 @@ export default {
     },
     methods:{
         selected ( el ){
-            console.log ( 'tree selected => ' , el )
             this.$emit ( 'treeselect' , [0] , el )
         }
     }

@@ -5,7 +5,7 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import store from '../store'
-
+import jp from 'jsonpath'
 
 //Vue.prototype.$db = db
 
@@ -193,6 +193,43 @@ export default {
             let o = JSON.parse(JSON.stringify(obj))
             let newObj = clone(o)
             return newObj
+        }
+        Vue.prototype.$block_copy = () => {
+            let current = store.state.editor.current
+            window.localStorage.setItem('whoobe-clipboard',JSON.stringify(current) )
+            store.dispatch('message','Block copied to clipboard')
+            return
+        }
+        Vue.prototype.$block_paste = () => {
+            let current = store.state.editor.current
+            let obj = window.localStorage.getItem ( 'whoobe-clipboard' )
+            obj = JSON.parse ( obj )
+            obj = traverse ( obj )
+            if ( current.hasOwnProperty ( 'blocks') ){
+                current.blocks.push ( obj )
+            }
+        }
+        /**
+         * block duplicate
+        */
+        Vue.prototype.$block_duplicate = () => {
+            let current = store.state.editor.current
+            let component = store.state.editor.component
+            delete current.parent    
+            var parent = jp.parent ( component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
+            let i 
+            if ( parent ){
+                parent.forEach ( (p,index) => {
+                    if ( p.id === current.id ){
+                        i = index
+                    }
+                })
+                let el = JSON.parse(JSON.stringify(current))
+                let obj = traverse ( el )
+                //obj.id = randomID()
+                parent.splice ( i+1 , 0 , obj )
+                store.dispatch('message' , 'Element duplicated')
+            }
         }
         /**
          * Right click contextmenu

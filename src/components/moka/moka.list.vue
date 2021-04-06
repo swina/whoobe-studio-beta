@@ -306,15 +306,18 @@ export default {
             })
         },
         setComponent(component){
+            this.$store.dispatch('setComponent',component)
             this.$store.dispatch ( 'loadComponent' , component )
             this.$store.dispatch ( 'loadMedia' )
+
             let tab = {
                 name: component.name,
                 component: () => import ( '@/components/moka/moka'),
                 blocks: component,
                 icon: 'edit',
                 filter: '',
-                ref: this.$randomID()
+                ref: this.$randomID(),
+                resumeAction: null
             }
             this.$store.dispatch ( 'add_tab' , tab )
             this.$emit('newtab')
@@ -324,6 +327,7 @@ export default {
         setPreview ( component ){
             this.doc = component.json
             window.localStorage.setItem('moka-preview',JSON.stringify(this.doc))
+            window.localStorage.setItem('whoobe-component',JSON.stringify(component))
             let route = this.$router.resolve({path: '/preview'});
             // let route = this.$router.resolve('/link/to/page'); // This also works.
             var w = window.open(route.href, 'moka','width=' + window.screen.availWidth );

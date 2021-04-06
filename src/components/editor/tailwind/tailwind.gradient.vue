@@ -30,6 +30,7 @@
 <script>
 
 import MokaColors from '@/components/palette'
+import classes from '@/plugins/tw.classes'
 export default {
     components: { MokaColors },
     data:()=>({
@@ -57,26 +58,43 @@ export default {
         target: null
     }),
     props: [ 'css' ],// 'gradient','from','to','via'],
+    computed:{
+        colors(){
+            return classes.colors
+        }
+    },
     mounted(){
         if ( !this.css ) return
         let allCss = this.css
         let classi = allCss.split(' ')
         classi.forEach ( (cl,index) => {
-            this.gradients.forEach ( gr => {
-                if ( cl.indexOf ( gr ) > - 1 ){
-                    this.twgradient[gr] = cl
-                    //allCss = allCss.replace(cl,'')
-                }
-            })
+            if ( cl.replaceAll(' ','') != ' '){
+                this.gradients.forEach ( gr => {
+                    console.log ( gr )
+                    if ( cl.indexOf ( gr ) > -1 ){
+                        this.colors.forEach ( color => {
+                            console.log ( gr + '-' + color , cl )
+                            if ( cl.indexOf ( gr + '-' + color) > - 1 ){
+                                this.twgradient[gr] = cl
+                            }
+                        })
+                    }
+                    // if ( cl.indexOf ( gr ) > - 1 ){
+                    //     this.twgradient[gr] = cl
+                    //     allCss = allCss.replace(cl,'')
+                    // }
+                })
+            }
             
             
         })
         this.directions.forEach ( dr => {
                 if ( this.css.indexOf ( dr.value ) > -1 ){
                     this.direction = dr.value
-                    //allCss = allCss.replace(dr.value,'')
+                    allCss = allCss.replace(dr.value,'')
                 }
         })
+        //this.$emit ( 'input' , Object.values(this.twgradient).join(' ') )
         /*
         this.direction ?
             this.$emit ( 'input' , Object.values(this.twgradient).join(' ') ) :
@@ -147,6 +165,7 @@ export default {
             this.palette =! this.palette
         },
         setColor(color,tone){
+
             this.palette = false
             if ( color ){
                 let t = tone ? '-' + tone : ''

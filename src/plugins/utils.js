@@ -8,6 +8,19 @@ import store from '../store'
 export default {
     install: function (Vue) {
     
+    Vue.prototype.$mapState = () => {
+        
+        let mp = {
+            desktop: store.state.desktop,
+            datastore: store.state.datastore,
+            editor: store.state.editor,
+            moka: store.state.moka,
+        }
+        return mp
+    }
+
+    
+
     Vue.prototype.$message = ( msg => {
         store.dispatch ( 'message' , msg )
     })
@@ -50,7 +63,11 @@ export default {
     Vue.prototype.$imageURL = ( image ) => {
         if ( !image ) return ''
         let url = ''
+        if ( image.hasOwnProperty('uri') ){
+            return image.uri
+        }
         image.hasOwnProperty('url') ? 
+            
             image.url.includes('http') ? 
                 url = image.url : 
                     url = ( window.localStorage.getItem('moka-strapiurl') || process.env.VUE_APP_API_URL ) + image.url.replace('/','') :

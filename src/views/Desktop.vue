@@ -2,7 +2,7 @@
     <div class="w-screen min-w-screen">
         
         <nav :class="'desktop-nav ' + size" style="transition:all .4s linear;">
-            <i class="material-icons hover:text-gray-300 pl-2 my-2" @click="navOpen=!navOpen">menu</i>
+            <img src="logo.svg" class="pl-2 my-2 animate-pulse" title="whoobe codes!" @click="navOpen=!navOpen"/>
             <template v-if="menu && menu.items" v-for="item in menu.items">
                 <div @click="newTab(item,null)" @mouseenter="submenu=item.label">
                     <i class="material-icons mr-2" :title="item.label">{{ item.icon }}</i>
@@ -33,7 +33,7 @@
             <!-- TABS -->
             <div class="desktop-tabs h-9 capitalize" v-if="desktop.tabs.length > 0">
                 <template v-for="(tab,index) in desktop.tabs">
-                    <div :key="'tab' + index" :class="'relative desktop-tab ' + active(index)" @click="currentTab=index" :title="tab.name">
+                    <div :key="'tab' + index" :class="'relative desktop-tab ' + active(index)" @click="currentTab=index,$action()" :title="tab.name">
                         <span>
                             <i v-if="tab.icon" class="material-icons text-sm mr-1 text-orange-500">{{tab.icon}}</i> {{ tab.name }}
                         </span> 
@@ -88,6 +88,7 @@ export default {
         currentTab(v){
             this.curentTab < 0 && this.desktop.tabs.length > 0 ?
                 this.currentTab = 0 : null
+            this.desktop.currentTab = this.currentTab
         },
         
     },
@@ -118,10 +119,10 @@ export default {
                 icon: item.icon ? item.icon : parent ? parent.icon : null,
                 filter: item.filter,
                 ref: this.$randomID(),
+                resumeAction: null,
                 blocks: null,
             })
             this.currentTab = this.desktop.tabs.length -1
-            console.log ( this.currentTab )
             //this.component = () => import ( '@/components/' + compName )
             
             

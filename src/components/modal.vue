@@ -1,9 +1,10 @@
 <template>
-    <div :class="'bg-white z-highest max-h-screen max-w-screen shadow-lg  rounded text-sm ' + size + position + height">
+    <div ref="draggableContainer" id="draggable-container" :class="'bg-white z-highest max-h-screen max-w-screen shadow-lg  rounded text-sm overflow-hidden ' + size + height + ' ' + $attrs.position"  style="resize:both;">
         
-        <i v-if="close" class="material-icons absolute top-0 right-0 m-2 text-gray-400" @click="$emit('close')">close</i>
-        
-        <div class="w-full bg-gray-800 text-white  rounded-tl  rounded-tr px-2 py-1">
+        <div class="absolute z-highest top-0 right-0 h-8 px-2 flex flex-row items-center text-gray-400 text-xls" >
+            <i class="material-icons" @click="$emit('close')">close</i>
+        </div>
+        <div id="draggable-header"  class="cursor-move w-full bg-gray-800 text-white  rounded-tl  rounded-tr px-2 py-1"  @mousedown="dragMouseDown">
             <slot name="title"></slot>
         </div>
             
@@ -62,12 +63,18 @@ export default {
             ]
         },
         fullscreen: false,
-        confirmMsg: ''
+        confirmMsg: '',
+        positions: {
+            clientX: undefined,
+            clientY: undefined,
+            movementX: 0,
+            movementY: 0
+        }
     }),
     computed:{
         size(){
                 return !this.$attrs.size ?
-                        'w-full md:w-1/2 lg:w-1/3' :
+                        'w-full md:w-1/3 lg:w-1/4' :
                             this.$attrs.size === 'md' ?
                                 'w-full md:w-1/2 lg:w-1/3' :
                                     this.$attrs.size === 'sm' ? 
@@ -75,7 +82,7 @@ export default {
                                             this.$attrs.size === 'lg' ? 
                                                 'w-full md:w-3/4 lg:w-2/3' : 
                                                     this.$attrs.size === 'full' ? 
-                                                        'w-screen h-screen' :
+                                                        'fixed w-screen h-screen top-0 left-0' :
                                                             'w-full md:w-1/3 lg:w-1/3'
         },
         height(){
@@ -83,9 +90,19 @@ export default {
                     ' h-' + this.$attrs.height : ''
         },
         position(){
-            return !this.$attrs.position ?
-                ' modal' :
-                    ' modal-' + this.$attrs.position
+            /*
+            if ( !this.$attrs.position ){
+                if ( document.getElementById ( 'draggable-container') )
+                    document.getElementById('draggable-container').style.top = window.pageYOffset + 'px'
+            }
+            return this.$attrs.position ? ' ' + this.$attrs.position :
+                ' absolute right-0 '
+            */
+            /*
+            return !this.$attrs.modal ?
+                    ' fixed ' + this.$attrs.position :
+                        this.$attrs.modal.hasOwnProperty('fixed') ? ' fixed ' + this.$attrs.position : ' absolute top-0 right-0 '
+            */
         },
         confirm(){
             return this.$attrs.confirm ? true : false
@@ -105,10 +122,53 @@ export default {
                 }
                         
             }
+        },
+
+    dragMouseDown: function (event) {
+        //if ( this.$attrs.modal.hasOwnProperty('fixed') ) return
+        //if ( this.$attrs.size && this.$attrs.size === 'full' ) return 
+        event.preventDefault()
+        // get the mouse cursor position at startup:
+        this.positions.clientX = event.clientX
+        this.positions.clientY = event.clientY + window.pageYOffset
+        document.onmousemove = this.elementDrag
+        document.onmouseup = this.closeDragElement
+    },
+    elementDrag: function (event) {
+      event.preventDefault()
+      this.positions.movementX = this.positions.clientX - event.clientX
+      this.positions.movementY = this.positions.clientY - event.clientY
+      this.positions.clientX = event.clientX
+      this.positions.clientY = event.clientY
+      // set the element's new position:
+      //if ( this.position.indexOf('fixed') < 0 ){
+        if ( !this.$attrs.position  ){
+            this.$refs.draggableContainer.style.top = (window.pageYOffset + this.$refs.draggableContainer.offsetTop - this.positions.movementY) + 'px'
+        } else {
+            //this.$refs.draggableContainer.style.top = '0px'
         }
+        this.$refs.draggableContainer.style.left =  (this.$refs.draggableContainer.offsetLeft - this.positions.movementX) + 'px'
+        
+      //}
+    },
+    closeDragElement () {
+      document.onmouseup = null
+      document.onmousemove = null
+    }
     },
     mounted(){
-        
+        /*
+       if ( !this.$attrs.fixed ) {
+           document.addEventListener ( 'scroll' , () => {
+               console.log ( 'scroll control')
+               if ( document.getElementById('draggable-container') )
+                   document.getElementById('draggable-container').style.top = window.pageYOffset + 'px'
+           })
+           if ( document.getElementById('draggable-container') )
+           console.log ( 'reposition element')
+                   document.getElementById('draggable-container').style.top = window.pageYOffset + 'px'
+       }
+       */
     }
 }
 </script>

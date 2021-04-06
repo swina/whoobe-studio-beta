@@ -73,9 +73,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
     name: 'MediaSelectFormat',
     props:['selectedImage'],
+    computed:{
+      ...mapState ( ['editor'] )
+    },
     methods:{
         autoSize(index) {
             let w = 40 - (index + 1) * 8;

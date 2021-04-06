@@ -1,8 +1,8 @@
 <template>
-    <div class="absolute text-xs font-sans w-full overflow-y-auto">
+    <div class="bg-gray-800 relative h-screen max-h-screen text-xs font-sans w-full overflow-y-auto">
         <i class="material-icons absolute top-0 right-0 m-1" @click="$emit('close')">close</i>
         <div class="items-center flex flex-row" @click="current=null,$emit('treeroot')"><i class="material-icons">web</i> Root</div>
-        <ul class="tree">
+        <ul class="tree overflow-y-auto">
             <li class="list-none" :key="block.id" v-for="(block,b) in doc.blocks">
                 <div class="hover:bg-gray-300 items-center flex flex-row"  @click="current=block.id,$emit('treeselect',[b],block)"><i class="material-icons">{{ block.icon}}</i>&lt;{{ block.element }}&gt; </div>
                 <ul v-if="current===block.id" class="tree">
