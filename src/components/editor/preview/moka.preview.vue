@@ -3,7 +3,7 @@
         <!-- 1st level - BLOCKS LOOP -->
         
             <template v-for="(block,b) in doc.blocks">
-                <div videobg v-if="block.image && (block.image.ext==='.mp4' || block.image.ext==='webm')" :class="'absolute ' + block.css.css">  
+                <div videobg v-if="block.image && (block.image.ext==='.mp4' || block.image.ext==='webm' || block.image.url.indexOf('.mp4') > -1)" :class="'absolute ' + block.css.css">  
                     <video playsinline :poster="block.image.previewUrl" class="object-cover h-full w-full" autoplay loop>
                         <source :src="block.image.url"/>
                     </video>
@@ -256,7 +256,7 @@ export default {
                         if ( el && el.hasOwnProperty('gsap') && el.gsap.animation ){
                             this.animate ( el , el.id   )
                         }
-                         if ( el && el.hasOwnProperty('blocks') ){
+                         if ( el && el.hasOwnProperty('blocks') && el.blocks ){
                             el.blocks.forEach ( element => {
                                  if ( element.hasOwnProperty('gsap') && element.gsap.animation ){
                                     this.animate ( element , element.id   )

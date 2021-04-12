@@ -70,10 +70,8 @@ export default {
         classi.forEach ( (cl,index) => {
             if ( cl.replaceAll(' ','') != ' '){
                 this.gradients.forEach ( gr => {
-                    console.log ( gr )
                     if ( cl.indexOf ( gr ) > -1 ){
                         this.colors.forEach ( color => {
-                            console.log ( gr + '-' + color , cl )
                             if ( cl.indexOf ( gr + '-' + color) > - 1 ){
                                 this.twgradient[gr] = cl
                             }

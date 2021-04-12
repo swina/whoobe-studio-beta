@@ -45,18 +45,21 @@ export default {
                     });
                 } else {
                     let el = document.querySelector('#'+id)
-                    el ?
+                    if ( el ){
+                        let ani
                         el.onmouseover = () => {
-                            let ani = gsap.effects[element.gsap.animation]( refs[id] ,{
+                            ani = gsap.effects[element.gsap.animation]( refs[id] ,{
                                 duration: parseFloat(element.gsap.duration),
                                 delay: parseFloat(element.gsap.delay),
                                 ease: element.gsap.ease
                             })
-                        } : null
-                    el ?
-                        el.onmouseout = () => {
+                            ani.play()
+                        } 
+                        el.onmouseleave = () => {
                             el.style = ''
-                        } : null
+                            ani.reverse()
+                        } 
+                    }
                 }
 
                 return gsap    

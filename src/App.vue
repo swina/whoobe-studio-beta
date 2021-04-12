@@ -2,14 +2,6 @@
   <div id="app">
     
     <router-view/>
-    <!--<moka-projects/>-->
-    <transition name="fade">
-      <div v-if="firstRun">
-        Welcome to MOKAStudio. <br/>
-        Before to start we need to create the default user in order to use MOKAStudio<br>
-        <button @click="createUser">Create User</button>
-      </div>
-    </transition>
     <!-- Global message display -->
     <transition name="fade">
         <div style="transform: translateX(-50%);left:50%;" class="border-l-4 border-blue-500 fixed bottom-0 m-auto shadow-xl mb-2 bg-gray-800 text-gray-200 text-left p-4 w-1/2  z-highest" v-if="message">   
@@ -30,7 +22,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import MokaProjects from '@/components/projects/projects'
 import VuexPersistence from 'vuex-persist'
 import __components from './plugins/components'
 import WhoobeActions from '@/components/moka/editor/whoobe.editor.actions'
@@ -41,7 +32,7 @@ const vuexLocal = new VuexPersistence({
 })
 export default {
   name: 'App',
-  components: { MokaProjects , WhoobeActions },
+  components: { WhoobeActions },
   data:()=>({
     message: '',
     firstRun: false,
@@ -88,12 +79,20 @@ export default {
     }
   },
   beforeMount(){
-    this.$find('elements')
+    this.$api.service('workspace').find().then ( result => {
+      this.workspace = result 
+      this.$store.dispatch ( 'workspace' , result )
+    })
+    //this.$find('elements')
+
     this.$find('settings')
     this.$find('media')
     this.$find('plugins') 
     this.$find('setup')
-    this.$find('projects')
+    this.$api.service('elements').find().then ( result => {
+      this.$store.dispatch ( 'dataset' , { table: 'elements' , data: result.data })
+    })
+
     this.$api.service('articles').find ( 
       { 
         query : 
@@ -145,7 +144,6 @@ export default {
       })
       this.$store.dispatch('loadElements')
     }
-    
   }
 }
 </script>

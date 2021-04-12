@@ -3,6 +3,7 @@ const editor = {
         current: null,
         component: null,
         action: null,
+        subaction: null,
         level: null,
         parent: null,
         autosave: null,
@@ -19,6 +20,9 @@ const editor = {
         },
         action ( state , action ){
             state.action = action
+        },
+        subaction ( state , action ){
+            state.subaction = action
         },
         level ( state , level ){
             state.level = level
@@ -45,6 +49,9 @@ const editor = {
         },
         setAction ( { commit } , action ){
             commit ( 'action' , action )
+        },
+        setSubAction ( { commit } , action ){
+            commit ( 'subaction' , action )
         },
         setLevel ( { commit } , level ){
             commit ( 'level' , level )

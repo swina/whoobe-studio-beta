@@ -1,14 +1,17 @@
 <template>
-    <div :data="printNow"></div>
+    <div :data="printNow">
+        
+    </div>
 </template>
 <script>
 export default {
-
+    data:()=>({
+        printed: false
+    }),
     props:['print'],
     computed:{
         printNow(){
-            this.print ?
-                this.saveprint() : null
+            this.saveprint()
         },
         devMode(){
              if ( typeof webpackHotUpdate === 'undefined' ) {
@@ -29,6 +32,8 @@ export default {
                         //process.env.VUE_APP_API_URL + screenshot.url.replace('/','') : 
                             //screenshot.url
             }
+            //window.localStorage.setItem ( 'whoobe-image-url' , this.$imageURL ( screenshot ) )
+            //this.$action('filerobot')
             this.$action('savecomponent')
             this.$emit('printed')
         },

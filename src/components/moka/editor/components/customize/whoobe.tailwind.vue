@@ -1,19 +1,19 @@
 <template>
     <div class="mt-0 cursor-pointer" :data="init">
          <!-- link and anchor -->
-        <div key="itemLink" class="w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'link' ? 'bg-orange-400 text-white' : ''" @click="toggle('link')">
+        <div v-if="!$attrs.mode" key="itemLink" class="w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'link' ? 'bg-orange-400 text-white' : ''" @click="toggle('link')">
                  <span class="text-sm">Link/Anchor</span>
                  <i class="material-icons absolute right-0 mr-2 text-gray-500">chevron_right</i>
         </div>
         <transition name="slideright">
-            <div v-if="group==='link'" class="flex flex-col h-full text-gray-500 bg-gray-800 w-full absolute top-0 right-0 z-2xtop">
+            <div v-if="!$attrs.mode && group==='link'" class="flex flex-col h-full text-gray-500 bg-gray-800 w-full absolute top-0 right-0 z-2xtop">
                 <div class="bg-orange-400 text-black  flex flex-row p-1 items-center capitalize" @click="group=''"><i class="material-icons absolute right-0">chevron_right</i>Link/Anchor</div>
                 <div class="p-1 flex flex-col">
                     <label>Link</label>
                     <input class="dark w-full" type="text" v-model="editor.current.link"/>
                     <label>Article/Page</label>
                     <select class="dark w-full" v-model="editor.current.link">
-                        <option v-for="(opt,o) in moka.articles" :value="'/' + opt.slug">{{ opt.title }}</option>
+                        <option v-for="(opt,o) in $mapState().datastore.dataset.articles" :value="'/' + opt.slug">{{ opt.title }}</option>
                     </select>
                     <label>Anchor</label>
                     <input class="dark w-full" type="text" v-model="editor.current.anchor"/>
@@ -34,12 +34,12 @@
         </transition> 
 
         <!-- Semantic -->
-        <div v-if="editor.current && editor.current.tag != 'document'" key="semantic" class="w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'semantic' ? 'bg-orange-400 text-white' : ''" @click="toggle('semantic')">
+        <div v-if="!$attrs.mode && editor.current && editor.current.tag != 'document'" key="semantic" class="w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'semantic' ? 'bg-orange-400 text-white' : ''" @click="toggle('semantic')">
                  <span class="text-sm">Semantic</span>
                  <i class="material-icons absolute right-0 mr-2 text-gray-400">chevron_right</i>
         </div>
         <transition name="slideright">
-        <div v-if="group==='semantic'" class="flex flex-col h-full text-gray-500 bg-gray-800 w-full absolute top-0 right-0 z-2xtop cursor-pointer">
+        <div v-if="!$attrs.mode && group==='semantic'" class="flex flex-col h-full text-gray-500 bg-gray-800 w-full absolute top-0 right-0 z-2xtop cursor-pointer">
             <div class="bg-orange-400 text-black  flex flex-row p-1 items-center capitalize" @click="group=''"><i class="material-icons absolute right-0">chevron_right</i>Semantic</div>
             <div class="p-1 flex flex-col">
                 <moka-options 
@@ -108,7 +108,7 @@ import MokaWidths from '@/components/editor/tailwind/tailwind.width'
 import { mapState } from 'vuex'
 import twgroups from '@/plugins/tw.groups'
 export default {
-    name: 'MokaTailwind',
+    name: 'WhoobeTailwind',
     components: {
         MokaBgcolor,
         MokaBgPosition,
@@ -138,6 +138,7 @@ export default {
     computed: {
         ...mapState ( ['moka','editor'] ),
         init(){
+            this.allCss = this.css
             return true
         }
     },
@@ -145,13 +146,20 @@ export default {
         cssTw:{
             handler(old,changed){
                 let css = this.allCss + ' ' + this.$clean(Object.values(changed).join(' ')) 
-                if ( this.$attrs.submenu ){
-                    this.editor.current.css.submenu = this.allCss + ' ' + this.$clean(Object.values(changed).join(' '))
-                    console.log ( 'submenu=>' , this.editor.current.css.submenu )
+                if ( !this.$attrs.mode ){
+                    if ( this.$attrs.submenu ){
+                        this.editor.current.css.submenu = this.allCss + ' ' + this.$clean(Object.values(changed).join(' '))
+                        console.log ( 'submenu=>' , this.editor.current.css.submenu )
+                    } else {
+                        !this.editor.current.css.hasOwnProperty('css') ?
+                            this.editor.current.css = this.allCss + ' ' + this.$clean(Object.values(changed).join(' ')) :
+                                this.editor.current.css.css = this.allCss + ' ' + this.$clean(Object.values(changed).join(' ')) 
+                    }
                 } else {
-                    !this.editor.current.css.hasOwnProperty('css') ?
-                        this.editor.current.css = this.allCss + ' ' + this.$clean(Object.values(changed).join(' ')) :
-                            this.editor.current.css.css = this.allCss + ' ' + this.$clean(Object.values(changed).join(' ')) 
+                    if ( this.$attrs.cssKey && this.$attrs.mode === 'menu' ){
+                        console.log ( this.editor.current.css[this.$attrs.cssKey] )
+                        this.editor.current.css[this.$attrs.cssKey ] = this.allCss + ' ' + this.$clean(Object.values(changed).join(' '))
+                    }
                 }
             },
             deep:true
@@ -161,6 +169,7 @@ export default {
         this.groups = twgroups
         this.allCss = this.css
         this.allStyle = this.editor.current.style
+        
         //this.allStyle = this.editor.current.style
         let obj = []
         this.groups.forEach ( (g , i) => {
@@ -180,7 +189,14 @@ export default {
             this.group === group ? this.group = '' : this.group = group
         },
         update(classe){
+            //if ( !this.$attrs.mode ){
             this.allCss = this.$clean(this.allCss.replace(this.$clean(classe),' '))
+            // } else {
+            //     this.allCss = this.$clean(this.allCss.replace(this.$clean(classe),' '))
+            //     console.log ( this.allCss )
+            //     let css = this.allCss + ' ' + Object.values(this.cssTw).join(' ') 
+            //     this.$emit ( 'css' , css  )
+            // }
         },
         blockcss(classe){
             this.editor.current.css.css = classe

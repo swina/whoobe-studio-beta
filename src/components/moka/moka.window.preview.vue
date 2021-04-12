@@ -1,6 +1,8 @@
 <template>
     <div class="z-highest" @contextmenu="showContext">
-        <div class="opacity-0 cursor-pointer z-highest absolute bg-gray-800 text-gray-500 text-sm w-4/5 md:w-1/5 border border-gray-900 shadow-lg" ref="contextMenu" id="contextMenu" @mouseleave="hideContextMenu">
+        <div class="preview-context-menu" ref="contextMenu" id="contextMenu" @mouseleave="hideContextMenu" style="left:-1000px;">
+            <whoobe-preview-context-menu @printscreen="printScreen=true" @html="showHtml=!showHtml"/>
+            <!--
             <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('savecomponent')">
                 <i class="material-icons mr-4">save</i>Save
             </div>
@@ -20,8 +22,9 @@
             <div class="p-1 hover:bg-white hover:text-black  flex flex-row items-center" @click="resizeTo(0)">
                 <i class="material-icons mr-4">laptop_mac</i>Laptop
             </div>
+            -->
         </div>
-        <i class="material-icons z-highest text-5xl fixed top-0 right-0 text-gray-400" @click="closeMe">close</i>
+        <!--<i class="material-icons z-highest text-5xl fixed top-0 right-0 text-gray-400" @click="closeMe">close</i>-->
         <moka-editor-preview v-if="doc" :doc="doc" :preview="true" :loop="false" :develop="true" @save="$emit('save')"/>
         <moka-loading v-if="!doc"/>
         <moka-modal size="lg" class="modal w-3/5" v-if="showHtml" @close="showHtml=!showHtml" buttons="none">
@@ -30,11 +33,12 @@
                 <whoobe-preview-html/>
             </div>
         </moka-modal>
-        <whoobe-preview-printscreen :print="printScreen" @printed="printScreen=false"/>
+        <whoobe-preview-printscreen v-if="printScreen" @printed="isprinted"/>
     </div>
 </template>
 
 <script>
+import WhoobePreviewContextMenu from '@/components/moka/editor/preview/whoobe.preview.context.menu'
 import MokaEditorPreview from '@/components/editor/preview/moka.preview'
 import WhoobePreviewHtml from '@/components/moka/editor/preview/whoobe.preview.html'
 import WhoobePreviewPrintscreen from '@/components/moka/editor/preview/whoobe.preview.printscreen'
@@ -44,10 +48,11 @@ export default {
     data:()=>({
         showContextMenu: false,
         showHtml: false,
-        printScreen: false
+        printScreen: false,
+        editScreenshot: true
     }),
     components: {
-        MokaEditorPreview , WhoobePreviewHtml , WhoobePreviewPrintscreen
+        WhoobePreviewContextMenu , MokaEditorPreview , WhoobePreviewHtml , WhoobePreviewPrintscreen
     },
     computed: {
         ...mapState ( ['editor'] ),
@@ -56,9 +61,20 @@ export default {
             this.$mapState().editor.current = mydoc
             this.$mapState().editor.component = JSON.parse(window.localStorage.getItem('whoobe-component'))
             return mydoc
-        }
+        },
+        devMode(){
+             if ( typeof webpackHotUpdate === 'undefined' ) {
+                 
+                 return true //false
+             }
+             
+             return true
+        },
     },
     methods:{
+        isprinted(){
+            this.printScreen = false  
+        },
         componentPrint(){
             this.$loading(true)
             this.showContext = false
@@ -67,6 +83,7 @@ export default {
         },
         hideContextMenu(){
             this.$refs.contextMenu.style.opacity = 0
+            this.$refs.contextMenu.style.left = '-1000px'
         },
         showContext(e){
             console.log ( e.clientY , e.clientX , screen.availWidth )
@@ -85,14 +102,76 @@ export default {
         size(s){
             window.screen.width = s
         },
-        resizeTo(width,height=null){
-            let left = (window.screen.availWidth/2)-(width/2);
-            window.resizeTo (width ? width : window.screen.availWidth , height?height:window.screen.availHeight)
-            window.moveTo ( left , 0 )
-            let sW = width ? width : window.screen.availWidth 
-            let sH = height ? height : window.screen.availHeight
-            let title = 'whoobe Preview ' + sW + 'x' + sH
-            document.title = title
+        save(screenshot){
+            if ( screenshot ){
+                this.$mapState().editor.component.image_uri = screenshot
+                this.$mapState().editor.component.image = screenshot
+                    //!screenshot.url.includes('http') ? 
+                        //process.env.VUE_APP_API_URL + screenshot.url.replace('/','') : 
+                            //screenshot.url
+            }
+            window.localStorage.setItem('whoobe-image-url',this.$imageURL(screenshot) )
+            this.editScreenshot ? 
+                this.$action ( 'filerobot' ) :
+                    this.$action('savecomponent')
+        },
+        //screenshot print
+        saveprint(){
+            if ( !this.devMode ){
+                this.$message('This option is available only in development mode')
+                return
+            }
+            this.$loading(true)
+            this.printMe()
+        },
+        //print action
+        async printMe(block='content') {
+            
+            if ( !this.devMode ){
+                this.$message('This option is available only in development mode')
+                return
+            }
+            let el , options
+            el = document.querySelector('#' + block)
+            if (!el){
+                document.querySelector(block)
+            }
+            options = { type: "dataURL" , useCORS: true , scale: 0.50 }
+            let screenshot = await this.$html2canvas(el, options)
+            
+            this.srcToFile ( screenshot ,  'w-preview-' + this.$mapState().editor.component.name.replaceAll(' ','') + '.jpg' , 'image/jpg' ).then ( resp => { 
+                //console.log ( 'src to file => ' , resp )
+                let formData = new FormData()
+
+                formData.append("file", resp )
+                formData.append("folder","preview")
+                formData.append('thumbs',0)
+                formData.append('url','/uploads/preview/w-preview-' + this.$mapState().editor.component.name.replaceAll(' ','') + '.jpg')
+                this.$http.post("upload/file", 
+                    formData ,
+                    {   
+                        headers: {
+                            "Content-Type": "multipart/form-data"
+                        },
+                }).then ( response => {
+                    console.log ( response )
+                    screenshot = response.data.url
+                    this.save(screenshot)
+                    this.$loading()
+                    return screenshot
+                }).catch ( error => {
+                    this.$loading()
+                    this.$message ( 'An error occured. Check your console log')
+                    //console.log ( error )
+                })
+            })
+
+        }, 
+        async srcToFile(src, fileName, mimeType){
+            return (fetch(src)
+                .then(function(res){return res.arrayBuffer();})
+                .then(function(buf){return new File([buf], fileName, {type:mimeType});})
+            );
         },
     },
     mounted(){

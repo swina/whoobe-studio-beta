@@ -3,15 +3,21 @@ import schema from '@/plugins/schema'
 
 const datastore = {
     state: {
+        workspace: null,
         preload:['settings','elements','components'],
         preloaded: [],
         tables:null,
         fields:{},
         dataset:{},
         schema : schema,
-        components_categories:[]
+        components_categories:[],
+        currentArticle: null,
+        selectedCategories: {}
     },
     mutations:{
+        workspace ( state , payload ){
+            state.workspace = payload 
+        },
         preloaded ( state , table ){
             state.preload.splice(state.preload.indexOf(table),1)
         },
@@ -29,9 +35,21 @@ const datastore = {
         },
         components_categories ( state , payload ){
             state.components_categories = payload
+        },
+        currentArticle ( state , payload ){
+            state.currentArticle = payload
+        },
+        currentProduct ( state , payload ){
+            state.currentProduct = payload
+        },
+        selectedCategories ( state , payload ){
+            state.selectedCategories = payload
         }
     },
     actions: {
+        workspace ( { commit } , payload ){
+            commit ( 'workspace' , payload )
+        },
         preloaded( { commit } , payload ){
             commit ( 'preloaded' , payload )
         },
@@ -61,6 +79,15 @@ const datastore = {
         },
         components_categories ( { commit } , payload ){
             commit ( 'components_categories' , payload )
+        },
+        currentArticle ( { commit } , payload ){
+            commit ( 'currentArticle' , payload )
+        },
+        currentProduct ( { commit } , payload ){
+            commit ( 'currentProduct' , payload )
+        },
+        selectedCategories ( { commit } , payload ){
+            commit ( 'selectedCategories' , payload )
         }
     }
 

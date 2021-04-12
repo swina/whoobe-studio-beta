@@ -194,12 +194,19 @@ export default {
             let newObj = clone(o)
             return newObj
         }
+        /**
+         * Copy block to clipboard
+         * @returns null
+         */
         Vue.prototype.$block_copy = () => {
             let current = store.state.editor.current
             window.localStorage.setItem('whoobe-clipboard',JSON.stringify(current) )
             store.dispatch('message','Block copied to clipboard')
             return
         }
+        /**
+         * Paste block from clipboard to current block (target has to have block property)
+         */
         Vue.prototype.$block_paste = () => {
             let current = store.state.editor.current
             let obj = window.localStorage.getItem ( 'whoobe-clipboard' )
@@ -213,12 +220,19 @@ export default {
          * block duplicate
         */
         Vue.prototype.$block_duplicate = () => {
+            let component = store.state.desktop.tabs[store.state.desktop.currentTab].blocks
             let current = store.state.editor.current
-            let component = store.state.editor.component
-            delete current.parent    
+            if ( !component || !current ) return
+            //let current = store.state.editor.current
+            //console.log ( component )
+            //let component = store.state.editor.component
+            //console.log ( component )
+            delete current.parent  
+
             var parent = jp.parent ( component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
             let i 
             if ( parent ){
+                console.log ( parent )
                 parent.forEach ( (p,index) => {
                     if ( p.id === current.id ){
                         i = index
@@ -226,9 +240,34 @@ export default {
                 })
                 let el = JSON.parse(JSON.stringify(current))
                 let obj = traverse ( el )
+                console.log ( i , obj )
                 //obj.id = randomID()
                 parent.splice ( i+1 , 0 , obj )
                 store.dispatch('message' , 'Element duplicated')
+            }
+        }
+        /**
+         * 
+         * @param {*} e 
+         * @param {*} block 
+         * @param {*} action 
+         * @returns 
+         */
+        Vue.prototype.$block_moveup = () => {
+            let component = store.state.editor.component
+            let current = store.state.editor.current 
+            var parent = jp.parent ( component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
+            if ( parent.length === 1 ) return
+            let i
+            parent.forEach ( (p,index) => {
+                if ( p.id === id ){
+                    i = index
+                }
+            })
+            if ( i > 0 ){
+                let obj = Object.assign({},current)
+                parent.splice(i,1)
+                parent.splice(i-1,0,obj)
             }
         }
         /**

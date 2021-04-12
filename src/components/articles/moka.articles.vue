@@ -50,10 +50,8 @@
                     </template>
                    
                     <td class="w-20">
-                        
                         <img v-if="templatePreview(article.template_id)" :src="templatePreview(article.template_id)" class="h-16 w-24 object-cover object-top"/>
-                        <!--
-                        <div v-if="article.component" :style="'background-image:url(' + background(article.component) + ')'" class="h-12 bg-auto bg-no-repeat bg-cover"></div>-->
+                        
                     </td>
                     <td></td>
                    
@@ -94,9 +92,10 @@
                         <button @click="exportPage=!exportPage">Export</button>-->
                         <div class="flex flex-col" v-if="currentArticle.blocks">
                             <div class="mb-2 flex flex-col">
-                                <button class="sm mb-2" @click="selectTemplate=!selectTemplate">Page / Template</button> 
-                                <img class="h-24 object-cover object-top cursor-pointer" :src="$imageURL(currentArticle.blocks.image_uri)"
-                                v-if="currentArticle.blocks.image_uri" @click="selectTemplate=!selectTemplate"/>
+                                <button class="sm mb-2" @click="$action('whoobe_templates')">Page / Template</button> 
+                                <img v-if="templatePreview(currentArticle.template_id)" :src="templatePreview(currentArticle.template_id)" class="h-24 object-cover object-top cursor-pointer" @click="$action('whoobe_templates')"/>
+                                <!--<img class="h-24 object-cover object-top cursor-pointer" :src="$imageURL(currentArticle.blocks.image_uri)"
+                                v-if="currentArticle.blocks.image_uri" @click="selectTemplate=!selectTemplate"/>-->
                             </div>
                             <div class="mb-2 flex flex-col">
                                 Category
@@ -236,6 +235,7 @@ export default {
     }),
     computed : { 
         ...mapState ( ['moka' , 'datastore' ] ),
+        
         templates (){
             return this.datastore.dataset.components.filter(comp=>{ return comp.category === 'template' || comp.category === 'page' } )
             return this.components.filter(comp=>{ return comp.category === 'template' || comp.category === 'page' } )
@@ -269,7 +269,8 @@ export default {
     watch:{
         articleSlug(id){
             this.$api.service ( 'articles').get ( id ).then ( response => {
-                this.currentArticle = response
+                this.$store.dispatch('currentArticle', response )
+                this.currentArticle = this.$mapState().datastore.currentArticle
                 this.$api.service ( 'components' ).find ( 
                     {
                         query: {
@@ -309,9 +310,9 @@ export default {
 
         }
     },
-    methods:{
+    methods:{ 
         templatePreview( id ){
-            let template = this.templates.filter ( template => {
+            let template = this.$mapState().datastore.dataset.components.filter ( template => {
                 return template._id === id            
             })[0]
             return template && template.image ?
@@ -405,8 +406,9 @@ export default {
         },
         save(){
             let vm = this
-            vm.currentArticle.id = parseInt(vm.currentArticle.id)
+            vm.currentArticle.slug === '' ? vm.currentArticle.slug = this.$slugify(vm.currentArticle.title) : null
             vm.currentArticle.featured_img = vm.currentArticle.image
+            console.log ( vm.currentArticle.slug )
             this.$api.service ( 'articles' ).patch ( vm.currentArticle._id , vm.currentArticle ).then ( response => {
                 //vm.currentArticle = response.data
                 console.log ( response )
@@ -421,11 +423,10 @@ export default {
             
         },
         create(){
-            this.$http.post ( 'articles' , this.newArticle ).then ( response => {
-                this.$store.dispatch('message','Article has been created successfully')
-            }).catch ( error => {
-                this.$store.dispatch('message','An error occurred. Check you console log')
-                console.log ( error )
+            this.newArticle.slug = this.$slugify(this.newArticle.title)
+            this.$api.service ( 'articles' ).create ( this.newArticle ).then ( res => {
+                this.$mapState().datastore.dataset.articles.push ( res )
+                this.articles.push ( res )
             })
         },
         addImage(){
@@ -482,6 +483,21 @@ export default {
         
     },
     mounted(){
+            let schema = this.$mapState().datastore.schema.articles
+            let article = {}
+            Object.keys(schema).map ( field => {
+                let fType = schema[field].type
+                fType === 'string' ? article[field] = '' :
+                    fType === 'object' ? article[field] = {} :
+                        fType === 'null' ? article[field] = null :
+                            fType === 'boolean' ? article[field] = false :
+                                fType === 'array' ? article[field] = [] : null
+            })
+            delete article._id
+            delete article.createdAt
+            delete article.updatedAt
+            this.newArticle = article
+
         let fields = this.columns.map ( col => {
             return col.field
         })

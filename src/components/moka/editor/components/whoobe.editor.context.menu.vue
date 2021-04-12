@@ -1,55 +1,67 @@
 <template>
-    <div v-if="editor.current">
-        <div class="border-b border-t p-1 border-gray-700 text-gray-600 flex flex-row items-center">
-            <i class="material-icons">{{ editor.current.icon }}</i> {{ editor.current.type }}
+    <div v-if="editor.current" class="z-highest" :key="$randomID()" :id="$randomID()">
+        <div class="editor-context-menu-item bg-black hover:bg-black border-l-0 border-b hover:border-gray-600 border-gray-600 capitalize">
+            <i class="material-icons mr-2">{{ editor.current.icon }}</i> {{ editor.current.type }}
+            <div class="absolute right-0 top-0 m-1 flex flex-row items-center">
+                <i class="material-icons mr-1">north</i>Move up
+            </div>
         </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('addcomponent')">
+        <!-- <div class="editor-context-menu-item" @click="$block_moveup()">
             <i class="material-icons mr-4">north</i>Move up
+        </div> -->
+        <div v-if="editor.current.type==='plugin'" class="editor-context-menu-item" @click="$action('pluginsetting')">
+            <i class="material-icons mr-4">settings</i>Plugin Settings
         </div>
-        <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('addcomponent')">
-            <i class="material-icons mr-4">add</i>Add element
+       
+        <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="editor-context-menu-item" @click="$action('addcomponent')">
+            <i class="material-icons mr-4">add</i>Add element <span class="text-right ml-4">(Alt + i)</span>
         </div>
-        <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('media')">
+        <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="editor-context-menu-item" @click="$action('media')">
             <i class="material-icons mr-4">photo</i>Background image
         </div>
-        <div v-if="editor.current.type==='element' || editor.current.type==='button'" class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('block_edit')">
-            <i class="material-icons mr-4">edit</i>Edit content
-        </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('customize')">
-            <i class="material-icons mr-4">brush</i>Customize element
-        </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$block_duplicate()">
-            <i class="material-icons mr-4">file_copy</i>Duplicate
-        </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('addreusable')">
-            <i class="material-icons mr-4">widgets</i>Add reusable component
+        <div v-if="editor.current.type==='element' || editor.current.type==='button'" class="editor-context-menu-item" @click="$action('block_edit')">
+            <i class="material-icons mr-4">edit</i>Edit content <span class="text-right ml-4">(Alt + w)</span>
         </div>
 
-        <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('addplugin')">
+        <div v-if="editor.current.tag==='menu'" class="editor-context-menu-item" @click="$action('block_menu')">
+            <i class="material-icons mr-4">menu</i>Menu Editor<span class="text-right ml-4"></span>
+        </div>
+
+        <div class="editor-context-menu-item" @click="$action('customize')">
+            <i class="material-icons mr-4">brush</i>Customize element  <span class="text-right ml-4">(Alt + z)</span>
+        </div>
+        <div class="editor-context-menu-item" @click="$block_duplicate($attrs.component,$attrs.current)">
+            <i class="material-icons mr-4">file_copy</i>Duplicate  <span class="text-right ml-4">(Alt + d)</span>
+        </div>
+        <div class="editor-context-menu-item" @click="$block_copy()">
+            <i class="material-icons mr-4">content_copy</i>Copy to clipboard  <span class="text-right ml-4">(Alt + c)</span>
+        </div>
+        <div class="editor-context-menu-item" @click="$block_paste()">
+            <i class="material-icons mr-4">content_paste</i>Paste from clipboard  <span class="text-right ml-4">(Alt + v)</span>
+        </div>
+        <div class="editor-context-menu-item" @click="$action('addreusable')">
+            <i class="material-icons mr-4">widgets</i>Add reusable component  <span class="text-right ml-4">(Alt + u)</span>
+        </div>
+        <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="editor-context-menu-item" @click="$action('addplugin')">
             <i class="material-icons mr-4">settings_input_component</i>Add plugin
         </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$block_copy()">
-            <i class="material-icons mr-4">content_copy</i>Copy to clipboard
-        </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$block_paste()">
-            <i class="material-icons mr-4">content_paste</i>Paste from clipboard
-        </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('animation')">
-            <i class="material-icons mr-4">motion_photos_on</i>Animation ...
+        
+        <div class="editor-context-menu-item" @click="$action('animation')">
+            <i class="material-icons mr-4">motion_photos_on</i>Animation ...  <span class="text-right ml-4">(Alt + a)</span>
         </div>
 
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('edit_css')">
+        <div class="editor-context-menu-item" @click="$action('edit_css')">
             <i class="material-icons mr-4">style</i>Edit CSS / Style
         </div>
         
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('saveasreusable')">
+        <div class="editor-context-menu-item" @click="$action('saveasreusable')">
             <i class="material-icons mr-4">archive</i>Save as component
         </div>
-        <div v-if="editor.current.hasOwnProperty('blocks')" class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('tree')">
-            <i class="material-icons mr-4">account_tree</i>Block tree
+        <div v-if="editor.current.hasOwnProperty('blocks')" class="editor-context-menu-item" @click="$action('tree')">
+            <i class="material-icons mr-4">account_tree</i>Block tree  <span class="text-right ml-4">(Alt + t)</span>
         </div>
-        <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('delete')">
-            <i class="material-icons mr-4">delete</i>Remove element
+        <div class="editor-context-menu-item" @click="$emit('delete')">
+            <i class="material-icons mr-4">delete</i>Remove element  <span class="text-right ml-4">(Alt + r)</span>
         </div>
         
     </div>
@@ -59,7 +71,9 @@
 
 export default {
     name: 'WhoobeEditorContextMenu',
-   
+    data:()=>({
+        group: ''
+    }),
     computed: {
         editor(){
             return this.$mapState().editor

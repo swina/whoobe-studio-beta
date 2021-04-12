@@ -28,6 +28,9 @@ export default {
     Vue.prototype.$action = ( (action = null) =>{
         store.dispatch('setAction',action)
     })
+    Vue.prototype.$subaction = ( (action = null) =>{
+        store.dispatch('setSubAction',action)
+    })
 
     Vue.prototype.$loading = ( status = false ) => {
         store.dispatch ( 'loading' , status )
@@ -66,8 +69,9 @@ export default {
         if ( image.hasOwnProperty('uri') ){
             return image.uri
         }
+        
         image.hasOwnProperty('url') ? 
-            
+            image.url.includes('data:image') ? url = image.url :
             image.url.includes('http') ? 
                 url = image.url : 
                     url = ( window.localStorage.getItem('moka-strapiurl') || process.env.VUE_APP_API_URL ) + image.url.replace('/','') :

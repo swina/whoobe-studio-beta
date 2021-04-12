@@ -7,7 +7,7 @@
 
         <label class="font-bold ">Category</label>
         <select class="w-full" v-model="component.category">
-            <option :key="category" v-for="category in $categories()">{{ category }}</option>
+            <option :key="category" v-for="category in $mapState().datastore.dataset.setup[0].categories.components">{{ category }}</option>
         </select>
         
         <label class="font-bold">Type <i class="material-icons" @click="addType=!addType">add</i></label>

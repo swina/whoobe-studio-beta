@@ -9,12 +9,12 @@
             <div @click="tab='moka'" :class="tab==='moka'?'py-1 px-2 bg-blue-400 text-white':'py-1 px-2 bg-white text-blue-400 border'">MOKAStudio</div>-->
         </div>
         <div class="flex flex-col justify-around">
-            <!-- <div v-if="tab==='projects'">
-                <h5 class="bg-gray-700 text-gray-200 p-1">Site generator settings</h5>
+            <div v-if="tab==='projects'">
+                <h5 class="bg-gray-700 text-gray-200 p-1">Projects</h5>
                 <div class="flex flex-row p-2 w-full text-base">
                     <whoobe-projects/>
                 </div>
-            </div> -->
+            </div>
             <div v-if="tab==='website'" class="border border-t-0 relative pb-8">
                 <h5 class="bg-gray-700 text-gray-200 p-1">Site generator settings</h5>
                 <div class="flex flex-row p-2 w-full text-base">
@@ -89,7 +89,7 @@
                 <h5 class="bg-gray-700 text-gray-200 p-1">Studio settings</h5>
                     <div class="flex flex-row">
                     <div class="flex flex-col p-2 w-full md:w-1/2">
-                        <div class="p-2 bg-gray-200 mb-4">
+                        <!-- <div class="p-2 bg-gray-200 mb-4">
                         <label>License Key</label>
                         <input type="text" class="w-full" v-model="license"/>
                         <div class="flex flex-row">
@@ -97,7 +97,7 @@
                             <button v-if="!license"><a href="https://moodgiver.netlify.app" target="_blank">Get a License Key</a></button>
                         </div>
                         <div>{{licenseMessage}}</div>
-                        </div>
+                        </div> -->
                         <label>Server URL</label>
                         <input type="text" class="text-base w-full" v-model="strapiurl"/>
                         <button @click="setStrapiURL()">Save</button>
@@ -171,7 +171,7 @@ import MokaUser from '@/components/settings/user'
 import MokaColor from '@/components/editor/tailwind/tailwind.color'
 import MokaBgcolor from '@/components/editor/tailwind/tailwind.bgcolor'
 import MokaSettingsElements from '@/components/settings/elements'
-import WhoobeProjects from '@/components/projects/projects'
+import WhoobeProjects from '@/components/settings/projects'
 import MokaCategories from './categories'
 import { mapState } from 'vuex'
 import classes from '@/plugins/tw.classes'
@@ -181,7 +181,7 @@ export default {
     components: { MokaUser , MokaColor , MokaBgcolor , MokaSettingsElements , MokaCategories , WhoobeProjects },
     data:()=>({
         tabs: [
-            { label: 'Projects' , tag: 'projects' },
+            { label: 'Workspace' , tag: 'projects' },
             { label: 'Studio' , tag: 'moka' },
             { label: 'Generator' , tag: 'website' },
             { label: 'Categories' , tag: 'categories'},
@@ -223,19 +223,19 @@ export default {
             this.strapiurl = window.localStorage.getItem('moka-strapiurl')
         }
         
-        this.$apiwhoobe.authenticate().then ( res => {
-            console.log ( 'user authenticated')
-            if ( window.localStorage.getItem('whoobe') ){
-                let license = JSON.parse(window.localStorage.getItem('whoobe'))
-                console.log ( license )
-                this.license = license.apikey
-            } else {
-                this.licenseUser.login = true
-            }
-        }).catch ( error => {
-            console.log ( error )
-            this.licenseUser.login = true
-        })
+        // this.$apiwhoobe.authenticate().then ( res => {
+        //     console.log ( 'user authenticated')
+        //     if ( window.localStorage.getItem('whoobe') ){
+        //         let license = JSON.parse(window.localStorage.getItem('whoobe'))
+        //         console.log ( license )
+        //         this.license = license.apikey
+        //     } else {
+        //         this.licenseUser.login = true
+        //     }
+        // }).catch ( error => {
+        //     console.log ( error )
+        //     this.licenseUser.login = true
+        // })
     },
     methods:{
         setStrapiURL(){
@@ -246,34 +246,34 @@ export default {
         },
         setLicense(){
             
-            this.$apiwhoobe.service('apikeys').find ( { query : { apikey: this.license , active: 1}}).then ( res =>{
-                if ( res.total ){
-                    this.$message('License Key is valid!Enjoy your new options using whoobe')
-                    window.localStorage.setItem('whoobe' , JSON.stringify ( { apikey:this.license }))
-                    this.licenseMessage = 'License is valid!!!' 
-                } else {
-                    this.$message('Invalid license key! Some options are disabled')
-                    window.localStorage.removeItem('whoobe')
-                    this.licenseMessage = 'Invalid license key! Some options are disabled' 
-                }
-            }).catch ( err => {
-                this.$message ( 'Invalid license key')
-            })
+            // this.$apiwhoobe.service('apikeys').find ( { query : { apikey: this.license , active: 1}}).then ( res =>{
+            //     if ( res.total ){
+            //         this.$message('License Key is valid!Enjoy your new options using whoobe')
+            //         window.localStorage.setItem('whoobe' , JSON.stringify ( { apikey:this.license }))
+            //         this.licenseMessage = 'License is valid!!!' 
+            //     } else {
+            //         this.$message('Invalid license key! Some options are disabled')
+            //         window.localStorage.removeItem('whoobe')
+            //         this.licenseMessage = 'Invalid license key! Some options are disabled' 
+            //     }
+            // }).catch ( err => {
+            //     this.$message ( 'Invalid license key')
+            // })
         },
         licenseLogin(){
-            this.$apiwhoobe.authenticate({
-                email: this.licenseUser.email,
-                password: this.licenseUser.password,
-                strategy: "local"
-            }).then ( user => {
-                this.licenseUser.message = 'Now you can set your license key'
-                this.$message ( this.licenseUser.message )
-                this.licenseUser.login = false
-            }).catch ( error =>{
-                this.licenseUser.message = 'Login error. Please check your credentials'
-                this.$message ( 'Login error. Please check your credentials' )
-                console.log ( error )
-            })
+            // this.$apiwhoobe.authenticate({
+            //     email: this.licenseUser.email,
+            //     password: this.licenseUser.password,
+            //     strategy: "local"
+            // }).then ( user => {
+            //     this.licenseUser.message = 'Now you can set your license key'
+            //     this.$message ( this.licenseUser.message )
+            //     this.licenseUser.login = false
+            // }).catch ( error =>{
+            //     this.licenseUser.message = 'Login error. Please check your credentials'
+            //     this.$message ( 'Login error. Please check your credentials' )
+            //     console.log ( error )
+            // })
         },
         mokacolors(){
             return classes.colors
@@ -296,6 +296,7 @@ export default {
             
         },
         saveSettings(){
+
             /*
             this.$http.put ( 'settings' , this.moka.settings ).then ( response => {
                 this.$store.dispatch('message','Settings saved')

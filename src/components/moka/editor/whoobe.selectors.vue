@@ -19,12 +19,14 @@
                     :pos="[0,b]"
                     :coords="[0,b]" 
                     :zi="b+1"
-                    :dropdown="dropdownView"
-                    @copy="copy"
-                    @selected="selected"
+                    @selected="selected"/>
+                    <!--
                     @customize="customize" 
                     @animations="animation=!animation"
-                    @edit="edit"/>
+                        @copy="copy"
+                        @edit="edit"
+                        :dropdown="dropdownView"
+                    -->
                 
                 <div v-if="block && block.hasOwnProperty('slider')" class="border p-1">
                     <div class="p-2 bg-gray-300">SLIDER <button class="danger" @click="removeSlider(block)">Remove</button></div>
@@ -43,8 +45,8 @@
     <whoobe-status-bar/>
 
     <!-- context menu -->
-    <div class="opacity-0 z-highest cursor-pointer z-highest absolute bg-gray-800 text-gray-500 text-sm border border-gray-900 top-0 left-0 w-1/4 shadow-lg" ref="contextMenu" id="contextMenu" style="left:-1000px" @mouseleave="hideContextMenu">
-        <whoobe-editor-context-menu/>
+    <div class="editor-context-menu" ref="contextMenu" id="contextMenu" style="left:-1000px" @mouseleave="hideContextMenu">
+        <component :is="contextMenuComponent" @delete="confirmModal=!confirmModal" :current="current" :component="component" :id="$randomID()" :key="$randomID()"/>
     </div>
     <!--- ELEMENTS EDITOR -->
 
@@ -156,15 +158,15 @@
         </moka-modal>
     </transition>
     -->
-    <div v-if="current && current.entity" class="fixed bottom-0 left-0 p-1">{{ current.tag }} <i class="material-icons">{{ current.icon }}</i></div>
+    <!--<div v-if="current && current.entity" class="fixed bottom-0 left-0 p-1">{{ current.tag }} <i class="material-icons">{{ current.icon }}</i></div>-->
 
     <!-- TOOLBAR -->
     
     <transition name="fade">
-        <whoobe-side-bar 
+        <!-- <whoobe-side-bar 
             :current="editor.current"
             :component="doc"
-            /> 
+            />  -->
             <!-- @tree="tree=!tree"
             @customize="customize=!customize"
             @edit="$emit('edit',current)"
@@ -253,7 +255,7 @@
         <moka-editor-actions :action="editor.action"/>
     </transition>    
     -->
-
+    <!--
      <moka-modal 
         size="full"
         v-if="editor.current && editor.current.element && editor.action==='edit' && (editor.current.type === 'image'||editor.current.type==='video' || editor.current.type === 'audio')" 
@@ -263,7 +265,7 @@
             <moka-edit-media v-if="editor.current.element!='iframe'" class="z-top" @newimage="setImage" :modal="true" @close="editContent=!editContent,$action()"/>
         </div>
     </moka-modal>
-    
+    -->
     <!-- PLUGIN SETTINGS -->
 
     <!--
@@ -302,6 +304,7 @@
     </transition>
     
     <!-- MEDIA --->
+    <!--
     <transition name="fade">
             <moka-modal
                 v-if="media"
@@ -314,7 +317,7 @@
                 </div>
             </moka-modal>
     </transition>
-    
+    -->
 
     <!-- TREE -->
     <!--
@@ -336,24 +339,11 @@
 </template>
 
 <script>
-// import MokaElement from '@/components/editor/render/moka.editor.element'
-// import MokaTextEditor from '@/components/editor/render/moka.text.editor'
-// import MokaEditIcon from '@/components/editor/render/moka.customize.icon'
-// import MokaEditMenu from '@/components/editor/render/moka.menus'
-// import MokaEditMedia from '@/components/media/media'
-// import MokaTree from '@/components/editor/render/moka.tree.draggable'
-// import MokaAnimation from '@/components/editor/render/moka.animation'
-// import MokaContainer from '@/components/editor/render/moka.editor.container'
-// import MokaSideBar from '@/components/editor/render/moka.editor.side.toolbar'
-// import MokaCustomizeDrawer from '@/components/editor/render/moka.editor.customize.drawer'
-// import MokaHotkeys from '@/components/editor/render/moka.hotkeys'
-// import MokaPluginSettings from './moka.editor.plugin.settings'
 import WhoobeEditorActions from '@/components/moka/editor/whoobe.editor.actions'
 import WhoobeSideBar from '@/components/moka/editor/components/whoobe.editor.side.bar'
 import WhoobeStatusBar from '@/components/moka/editor/components/whoobe.editor.status.bar'
 import WhoobeContainer from '@/components/moka/editor/components/whoobe.editor.container'
 import WhoobeEditorContextMenu from '@/components/moka/editor/components/whoobe.editor.context.menu'
-import draggable from 'vuedraggable'
 import gsap from 'gsap'
 import gsapEffects from '@/plugins/animations'
 import { mapState } from 'vuex' 
@@ -363,12 +353,12 @@ export default {
     name: 'WhoobeSelectors',
     data:()=>({
         customizerID: 0,
-        customizePos: 'right-0',
-        customizeSwitch: false,
-        dropdownView: false,
+        //customizePos: 'right-0',
+        //customizeSwitch: false,
+        //dropdownView: false,
         confirm: false,
         confirmModal: false,
-        printScreen: null,
+        //printScreen: null,
         current: null,
         toolbar: false, 
         customize: false,
@@ -395,24 +385,14 @@ export default {
         WhoobeSideBar,
         WhoobeStatusBar,
         WhoobeEditorContextMenu,
-        // MokaElement,
-        // MokaTextEditor,
-        // MokaEditIcon,
-        // MokaEditMenu,
-        // MokaEditMedia,
-        // MokaAnimation,
-        // MokaContainer,
-        // MokaSideBar,
-        // MokaCustomizeDrawer,
-        // MokaTree,
-        // MokaHotkeys,
-        // MokaPluginSettings,
-        draggable
     },
     props: [ 'doc' , 'component' ],
     
     computed: {
         ...mapState ( ['moka','editor'] ),
+        contextMenuComponent(){
+            return WhoobeEditorContextMenu
+        },
         init(){
             this.current = this.editor.current
 
@@ -420,20 +400,6 @@ export default {
         },
         docCss(){
             return this.doc.id === this.moka.selected ? 'border-orange-300' : ''
-        },
-        isFullScreen(){
-            return this.fullscreen ? 'fixed w-screen h-screen bg-white z-2xtop top-0 left-0' : 'nuxpresso-modal w-full md:w-3/4 lg:w-2/3'
-        },
-        getSlider(){
-            if ( this.doc && this.doc.hasOwnProperty('slider') ){
-                this.currentSlide = this.doc.blocks[0]
-            }
-            return true
-        },
-        entity(){
-            if ( this.current && this.current.entity ){
-                return this.current.entity.tag
-            }
         },
         gsapAnimations(){
             return gsapEffects
@@ -447,147 +413,13 @@ export default {
         component(c){
             return null
         },
-        customizeElement(flag){
-            ////console.log ( 'customize=>' , flag )
-        },
-        customizeSwitch(v){
-            v ? this.customizePos = 'left-0' : this.customizePos = 'right-0'
-        },
-        moka:()=>{
-            handler:(old,obj)=>{
-                //////console.log ( obj )
-                this.current = obj.current
-            }
-            deep: true
-        },
-        editor:()=>{
-            handler:(old,obj)=>{
-                //console.log ( obj )
-                this.current = obj.current
-            }
-            deep: true
-        }
 
     },
     methods: {
-        addSlide(){
-            this.doc.blocks.push ( this.$grid(1) )
-        },
-        slideSelected(index){
-            return this.currentSlide && index === this.slideIndex ?
-                'bg-blue-500 text-white' : ''
-                        
-        },
-        dropdown(v){
-            this.dropdownView = v
-            //console.log(this.dropdownView)
-        },
-        edit(block){
-            this.$emit ( 'edit' , block )
-        },
-        copy(block){
-            //console.log ( 'copied element=>' , block )
-            this.$emit ( 'copy' , block )
-        },
         selected(el){
             //console.log ( 'current =>' , el.type , el.id)
             this.current = el 
             this.$store.dispatch('current',el)
-        },
-        isFlex(css){
-            if ( !css ) {
-                this.current.entity.css += ' flex-col'
-                return
-            }
-            if ( css.indexOf('flex-col') < 0 && css.indexOf('flex-row') < 0 ){
-                this.current.entity.css += ' flex-col'
-            }
-        },
-        switchFlex(css){
-            if ( css.indexOf('flex-col') < 0 ){
-                this.current.entity.css += ' flex-col'
-            } else {
-                this.current.entity.css = this.current.entity.css.replace('flex-col','')
-            }
-        },
-        keyUp(event){
-            //console.log ( event )
-        },
-        
-        setImage(img){
-            if ( this.editor.current.type === 'file' ){
-                this.editor.current.link = img.url
-                this.editor.current.image = {}
-                this.editor.current.image.size = img.size
-                this.editor.current.image.name = img.name
-                this.current = this.editor.current
-                this.$store.dispatch('setCurrent', this.current)
-                return
-            }
-            this.current = this.editor.current
-            this.editor.current.image = img
-            this.current.image = img
-            this.selectThumbnail = false
-            this.$store.dispatch('setCurrent', this.current)
-        },
-        activeDoc(id){
-            if ( this.moka && this.moka.selected ) {
-                return this.moka.selected === id ? ' border-2 border-dashed border-gray-400 ' : ''
-            } else {
-                return ' '
-            }
-        },
-        active(id){
-            if ( this.moka && this.moka.selected ) {
-                return this.moka.selected === id ? 'opacity-100' : 'opacity-0 hover:opacity-100'
-            } else {
-                return 'opacity-0 hover:opacity-100 '
-            }
-        },
-        setCurrent ( element ){
-            //console.log ( element )
-            if ( !element ) return 
-            this.customizerID = this.$randomID()
-            this.current.entity = element
-            element && !element.hasOwnProperty('gsap') ? 
-                this.current.entity.gsap = {
-                    animation: '',
-                    duration: .7,
-                    ease: '',
-                    delay:0
-                } : null
-            this.$store.dispatch('selected',element.id),
-            this.$store.dispatch('current' , this.current )
-            this.$action()
-            this.toolbar = true
-        },
-        setCurrentSub(coords,element){
-            this.$store.dispatch('selected',element.id)
-            this.setCurrent ( coords ,element)
-        },
-        treeselect(coords,el){
-            let level = coords
-            level.push ( this.$attrs.index )
-            this.$store.dispatch( 'selected' , el.id )
-            this.$store.dispatch('setLevel',level)
-            this.$store.dispatch ( 'setCurrent' , el )
-            this.selected ( el )
-            /*
-            let level = coords
-            this.current = el
-            //level.push ( this.$attrs.index )
-            this.$store.dispatch( 'selected' , el.id )
-            //this.$store.dispatch('setLevel',level)
-            //this.$store.dispatch('setCurrent',el)
-            this.$store.dispatch ( 'setCurrent' , el )
-            this.selected(el)
-            */
-        },
-        setMenuItems(items){
-            this.editor.current.items = items
-        },
-        responsive(css){
-            return css// this.$clean ( this.$cssResponsive ( css ) )
         },
         stile(block,doc){
             if ( !block ) return 
@@ -610,33 +442,6 @@ export default {
             this.$action()
             this.confirmModal = false
             return
-        },
-        printSave(){
-            this.print().then (()=>{
-                this.$emit('save',this.printScreen)
-                this.$emit('close')
-            })
-        },
-        async print() {
-            let el , options
-            el = document.querySelector('#content')
-            options = { type: "dataURL" , useCORS: true , scale: 0.50 }
-            let screenshot = await this.$html2canvas(el, options)
-            this.printScreen = screenshot
-            this.$emit('save',screenshot)
-        },
-        animate(){
-            //console.log ( this.current.entity.gsap )
-            if ( this.current.entity.gsap && this.current.entity.gsap.animation ){
-                gsap.effects[this.current.entity.gsap.animation]( this.$refs['aniDemo'] ,{
-                    trigger: this.$refs['aniDemo'],
-                    duration: parseFloat(this.current.entity.gsap.duration) ,
-                    ease: this.current.entity.gsap.ease,
-                    delay: parseFloat(this.current.entity.gsap.delay)
-
-                }) 
-            }
-            
         },
         removeSlider(block){
             this.$store.dispatch('setCurrent',block)
@@ -668,16 +473,39 @@ export default {
                     this.$refs.contextMenu.style.left = ( e.clientX - 300 - 20) + 'px'
                 }
             }
-            this.$refs.contextMenu.style.top = (window.pageYOffset + e.clientY-200) + 'px'
+            if ( e.clientY < 150 ){
+                this.$refs.contextMenu.style.top = '20px'    
+            } else {
+                this.$refs.contextMenu.style.top = (window.pageYOffset + e.clientY-200) + 'px'
+            }
             this.$refs.contextMenu.style.opacity = 1
         },
-        
+        duplicateElement(){
+            let current = this.current
+            delete current.parent  
+
+            var parent = jp.parent ( this.component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
+            let i 
+            if ( parent ){
+                console.log ( parent )
+                parent.forEach ( (p,index) => {
+                    if ( p.id === current.id ){
+                        i = index
+                    }
+                })
+                let el = JSON.parse(JSON.stringify(current))
+                let obj = this.$clone ( el )
+                console.log ( i , obj )
+                //obj.id = randomID()
+                parent.splice ( i+1 , 0 , obj )
+                this.$message('Element duplicated')
+            }
+        },
     },
     mounted(){  
         let vm = this 
         this.current = this.doc.blocks[0].blocks[0]
         this.$store.dispatch('setCurrent',this.current)
-        //this.current = this.moka.current
         window.addEventListener("keydown", e => {
 
             if ( e.altKey && e.code === 'KeyB' ){
@@ -694,10 +522,6 @@ export default {
                 if (window.CustomEvent) {
                     document.getElementById(this.$mapState().editor.current.id).dispatchEvent(new CustomEvent('contextmenu'))
                 }
-                //this.showContext(e)
-                //this.doc && !this.doc.hasOwnProperty('slider') ?
-                //    vm.$emit('preview') :
-                //        vm.$emit('slider')
             }
             if ( e.altKey && e.code === 'KeyZ' ){
                 if ( this.editor.current  ){
@@ -716,9 +540,7 @@ export default {
             }
             if ( e.altKey && e.code === 'KeyA' ){
                 if ( this.editor.current  ){
-                    this.editor.action === 'animation' ?
-                        this.$action() :
-                            this.$action ( 'animation' )
+                    this.$action ( 'animation' )
                 }
             }
             if ( e.altKey && e.code === 'KeyG' ){
@@ -748,8 +570,9 @@ export default {
                 }
             }
             if ( e.altKey && e.code === 'KeyD' ){
-                if ( this.editor.current  ){
-                    this.$block_duplicate()
+                if ( this.current  ){
+                    this.$emit('duplicate',this.current)
+                    //this.$block_duplicate(this.component)
                     //this.$emit('duplicate',this.editor.current)
                 }
             }

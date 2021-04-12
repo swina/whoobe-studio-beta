@@ -1,27 +1,50 @@
 <template>
 <div v-if="el">
-    <nav v-if="el.element === 'menu'" :class="menu_responsive(el) + ' z-top ' + el.css.align"> 
-        
-        
-        <div menu_item v-for="(item,i) in el.items" :class="el.css.css + ' cursor-pointer relative pr-4'" :key="el.id + '_' + i"> 
+    <nav v-if="el.element === 'menu'" :class="menu_responsive(el) + ' z-top ' + el.css.align +  background(el)"> 
+        <div menu_item v-for="(item,i) in el.items" :class="el.css.css  + ' cursor-pointer relative '" :key="el.id + '_' + i"> 
 
-            <a :class="el.css.css" v-if="!item.submenu && !$attrs.develop && item.link && !item.link.includes('http')" :href="item.link">
-                <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
+            <a :class="el.css.items" v-if="!item.submenu && !$attrs.develop && item.link && !item.link.includes('http')" :href="item.link" @mouseover="menuover=null">
+                <span v-if="!item.icon">{{ item.label }}</span>
                 <span v-else><i :class="'bi-' + item.icon"></i></span> 
             </a>
             
-            <span v-else @mouseover="menuover=i" :class="el.css.css" @click="menuover=i">
-                <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
+            <span v-else @mouseover="menuover=i" :class="el.css.items" @click="menuover=i">
+                <span v-if="!item.icon">{{ item.label }}</span>
                 <span v-else><i :class="'bi-' + item.icon"></i></span>
             </span>
             
-            <transition name="slidedown">
-            <div submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' absolute flex flex-col z-highest'" @mouseleave="menuover=-1"> 
-                <template iv v-for="sub in item.submenu">
-                    <div :class="el.css.css">{{sub.label}}</div>
-                </template>
+            
+            <div submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' fixed flex flex-col z-highest'" @mouseleave="menuover=-1">
+                
+                <div v-if="item.submenu[0].blocks" :class="Object.values(item.submenu[0].blocks.css).join(' ')" :style="background(item.submenu[0].blocks)">
+                    
+                    <template v-for="block in item.submenu[0].blocks.blocks">
+                        <moka-element
+                        v-if="block && !block.hasOwnProperty('blocks') && !block.hasOwnProperty('blocks')"
+                        :key="block.id"
+                        :el="block"
+                        :data="$attrs.data||null"
+                        :currency="$attrs.currency||null"
+                        :develop="false"/>
+
+                        <moka-preview-single-container 
+                            v-if="block.hasOwnProperty('blocks')"
+                            :key="block.id" 
+                            :doc="block" 
+                            level="1" 
+                        />
+                    </template>
+                </div>
+                <div v-else>
+                    <template v-for="sub in item.submenu">
+                            
+                        <div :class="el.css.submenu_items">
+                            {{sub.label}}
+                            <img v-if="sub.hasOwnProperty('image')" :src="$imageURL(sub.image)" class="w-1/2"/>
+                        </div>
+                    </template>
+                </div>
             </div>
-            </transition>
         </div>
         
 
@@ -41,6 +64,7 @@
                 <div v-if="item.submenu && item.submenu.length" class="ml-2 flex flex-col"> 
                     <div v-for="sub in item.submenu">
                         <a :class="itemsCSS" :href="sub.link">{{ sub.label }}</a>
+                        <img v-if="sub.hasOwnProperty('image')" :src="$imageURL(sub.image)" class="w-24"/>
                     </div>
                 </div>
             </div>
@@ -53,10 +77,13 @@
 <script>
 import { mapState } from 'vuex'
 
+import MokaElement from '@/components/editor/preview/moka.element.component'
+import MokaPreviewSingleContainer from '@/components/editor/preview/moka.menu.container'
 var gsap
 export default {
-    name: 'MokaMenuElement',
+    name: 'MokaMenu',
     props: ['el'],
+    components: { MokaPreviewSingleContainer },
     data:()=>({
         opacity: 'opacity-0',
         menuover: -1,
@@ -86,14 +113,21 @@ export default {
             this.menu_show =! this.menu_show
         },
         isOver(i){
-            return i < 0 ? 'opacity-0' : this.menuover === i ? 'opacity-100' : 'opacity-0'
+            return i < 0 ? 'opacity-0' : this.menuover === i ? 'opacity-100 height-grow' : 'opacity-0 height-grow-out'
         },
         menu_responsive(menu){
             if ( menu.type === 'horizontal' && menu.responsive ) return 'hidden flex flex-col md:flex md:flex-row' 
             if ( menu.type === 'horizontal' && !menu.responsive ) return menu.css.container
             if ( menu.type === 'vertical' ) return 'flex flex-col'
         },
-        
+        background(block){
+            if ( !block ) return ''
+            return block.hasOwnProperty('image') ?
+                //'background-image:url(' + this.$imageURL(block.image) + ')' : ''
+                block.image && block.image.url ? 
+                        ' background-image:url(' + this.$imageURL(block.image) + ');' :
+                             ''  : ''
+        },
 
     },
     mounted(){

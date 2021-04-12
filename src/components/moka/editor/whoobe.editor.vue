@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div :class="'top-0 right-0 left-0 bottom-0 flex mb-20 flex-row '" v-if="$attrs.component && hasblocks && !preview">
+    <div :class="'editor-container min-h-screen top-0 right-0 left-0 bottom-0 flex mb-20 flex-row'" v-if="component && hasblocks && !preview">
         <transition name="slideright">
         <div class="w-full overflow-y-auto overflow-x-hidden">
             
@@ -15,8 +15,8 @@
                         <i class="material-icons text-yellow-500" title="Select document" @click="$store.dispatch('setCurrent',doc),$store.dispatch('selected',doc.id)">fiber_manual_record</i>
                         <i class="material-icons text-green-500" @click="preview=!preview" title="preview">fiber_manual_record</i>
                         <div class="text-sm ml-4">
-                            {{ $attrs.component.name }}
-                            <span class="capitalize ml-2">- {{$attrs.component.category}}</span> [#{{$attrs.component.id}}]
+                            {{ component.name }}
+                            <span class="capitalize ml-2">- {{component.category}}</span> [#{{component.id}}]
                         </div>
                         <i class="material-icons hover:text-blue-500 ml-2" title="Settings" @click="settings=!settings">settings</i>
                     </div>
@@ -25,11 +25,12 @@
                 <!-- BLOCKS MAIN EDITOR -->
                 <div :class="'pb-10 mt-4 mb-10 ' + pageCss">
                     <whoobe-selectors
+                        :key="doc.id"
                         :doc="doc"
-                        :component="current"
-                        :parent="$attrs.component"
+                        :component="$mapState().desktop.tabs[$mapState().desktop.currentTab].blocks"
+                        :parent="$mapState().desktop.tabs[$mapState().desktop.currentTab].blocks"
                         :develop="true"
-                        :category="$attrs.component.category"
+                        :category="component.category"
                         :root="true"
                         @slidersettings="sliderSettings=!sliderSettings"
                         @save="saveComponent" 
@@ -39,9 +40,9 @@
                         @edit="editInline"
                         @copy="copyElement"
                         @paste="pasteElement"
-                        @duplicate="duplicateElement"
+                        @duplicate="duplicateElement"  
                         @saveblock="saveBlock"
-                        @delete="removeElement"/>    
+                        @delete="removeElement"/>  
                 </div>
             </div>
                 
@@ -67,9 +68,9 @@
 
                     <i class="material-icons moka-icons nuxpresso-icon-circle text-gray-300 ml-2" title="Preview in new window" @click="openPreview()">preview</i>                 
                     
-                    <i class="material-icons moka-icons nuxpresso-icon-circle text-gray-300 ml-2" v-if="$attrs.component && $attrs.component.category!='slider'" title="Preview" @click="preview=!preview,disable=false">remove_red_eye</i> 
+                    <i class="material-icons moka-icons nuxpresso-icon-circle text-gray-300 ml-2" v-if="component && component.category!='slider'" title="Preview" @click="preview=!preview,disable=false">remove_red_eye</i> 
 
-                    <i class="material-icons nuxpresso-icon-circle ml-2 text-gray-300 bg-green-400 " v-if="$attrs.component && $attrs.component.category==='slider'" title="Preview" @click="slider=!slider,disable=false">remove_red_eye</i>
+                    <i class="material-icons nuxpresso-icon-circle ml-2 text-gray-300 bg-green-400 " v-if="component && component.category==='slider'" title="Preview" @click="slider=!slider,disable=false">remove_red_eye</i>
                     
                     <i class="material-icons moka-icons nuxpresso-icon-circle text-gray-300 ml-2" @click="saveComponent"
  title="Save document">save</i>
@@ -96,19 +97,19 @@
             <div slot="content">
                 <div class="p-2 bg-gray-200 rounded">
                     <label class="font-bold">Name</label>
-                    <input class="w-full" type="text" v-model="$attrs.component.name"/> 
+                    <input class="w-full" type="text" v-model="component.name"/> 
                     <label class="font-bold">Description</label>
-                    <textarea class="w-full" v-model="$attrs.component.description"></textarea>
+                    <textarea class="w-full" v-model="component.description"></textarea>
 
                     <label class="font-bold ">Category</label>
-                    <select class="w-full" v-model="$attrs.component.category">
+                    <select class="w-full" v-model="component.category">
                         <option :key="category" v-for="category in $categories()">{{ category }}</option>
                     </select>
                     
                     <label class="font-bold">Type <i class="material-icons" @click="addType=!addType">add</i></label>
                     <input class="w-full" v-if="addType" v-model="newType" @change="saveNewType"/>
                     
-                    <select class="w-full" v-model="$attrs.component.tags">
+                    <select class="w-full" v-model="component.tags">
                         <option value=""></option>
                         <option :key="tipo" v-for="tipo in datastore.dataset.setup[0].types.components" :value="tipo">{{ tipo }}</option>
                     </select>
@@ -138,27 +139,27 @@
                         </select>
                     </div>    
 
-                    <div class="bg-gray-300 w-full cursor-pointer my-1 p-1 font-bold" @click="templateSettings=!templateSettings" v-if="$attrs.component.category === 'template'">Template settings <i class="material-icons">expand_more</i></div>
+                    <div class="bg-gray-300 w-full cursor-pointer my-1 p-1 font-bold" @click="templateSettings=!templateSettings" v-if="component.category === 'template'">Template settings <i class="material-icons">expand_more</i></div>
                     <div class="flex flex-col text-sm bg-white p-1" v-if="templateSettings">
                         <label class="font-bold">Default template</label>
-                        <div class="text-xs text-gray-600"><input type="checkbox" v-model="$attrs.component.default"/> (apply to articles with no template)</div>
+                        <div class="text-xs text-gray-600"><input type="checkbox" v-model="component.default"/> (apply to articles with no template)</div>
                     
                         <div class="my-1">
-                            <input type="checkbox" v-model="$attrs.component.loop"/>
+                            <input type="checkbox" v-model="component.loop"/>
                             <span class="font-bold">Loop </span>
                         </div>
-                        <div class="flex flex-col" v-if="$attrs.component.loop">
-                            <select class="w-full" v-model="$attrs.component.loop_type">
+                        <div class="flex flex-col" v-if="component.loop">
+                            <select class="w-full" v-model="component.loop_type">
                                 <option value="">all</option>
                                 <option value="articles">articles</option>
                                 <option :key="opt.slug" v-for="opt in moka.categories" :value="opt.slug">articles/category/{{opt.name}}</option>
                             </select>
                             <div class="my-1">
-                                <input type="checkbox" v-model="$attrs.component.loop_pagination"/>
+                                <input type="checkbox" v-model="component.loop_pagination"/>
                                 <label class="font-bold">Pagination</label> 
                             </div>
                             <div>Articles per page</div>
-                            <input class="w-full" type="number" min="1" max="100" v-model="$attrs.component.loop_limit"/>
+                            <input class="w-full" type="number" min="1" max="100" v-model="component.loop_limit"/>
                         </div>
                     </div>
 
@@ -213,11 +214,11 @@
             <div class="flex flex-col bg-gray-300 p-2 rounded">
             <vue-blob-json-csv
                 file-type="json"
-                :file-name="$attrs.component.name"
+                :file-name="component.name"
                 :data="[jsonToExport]"
                 confirm="Do you want to download it?"
             >
-            <button class="my-2">Download {{$attrs.component.name}}</button>
+            <button class="my-2">Download {{component.name}}</button>
             </vue-blob-json-csv>
             </div>
         </div>
@@ -278,7 +279,7 @@
         <div class="absolute min-h-screen h-screen top-0 left-0 right-0 bottom-0 mr-10"  v-if="preview">
             <i class="material-icons text-5xl absolute top-0 right-0" @click="preview=!preview">close</i>
             <div :class="'min-h-screen h-screen bg-white ' + body_settings">
-                <moka-editor-preview :category="$attrs.component.category" :doc="doc"  @save="saveprint" :loop="$attrs.component.loop_type" :develop="false" @close="preview=!preview" @html="viewhtml"/>
+                <moka-editor-preview :category="component.category" :doc="doc"  @save="saveprint" :loop="component.loop_type" :develop="false" @close="preview=!preview" @html="viewhtml"/>
             </div>
         </div> 
     </transition>
@@ -306,8 +307,8 @@
                 <i class="material-icons moka-icon-circle mr-2" @click="printElement(editor.current.id)" v-if="!snapshot">camera_enhance</i>
                 <i class="material-icons moka-icon-circle mr-2" @click="$action()">close</i>
             </div>
-            <moka-editor-preview v-if="!snapshot" :class="'w-full ' + editor.current.css.css + ' ' + editor.current.css.container" :category="$attrs.component.category" :doc="editor.current"  @save="printElement(editor.current.id)" :loop="false" :develop="false" @close="$action()"/>
-            <a ref="blockprint" v-if="snapshot" id="saveSnapshot" :href="snapshot" :download="$attrs.component.name" @click="$action()"><img class="m-auto border border-dashed" :src="snapshot"/></a>
+            <moka-editor-preview v-if="!snapshot" :class="'w-full ' + editor.current.css.css + ' ' + editor.current.css.container" :category="component.category" :doc="editor.current"  @save="printElement(editor.current.id)" :loop="false" :develop="false" @close="$action()"/>
+            <a ref="blockprint" v-if="snapshot" id="saveSnapshot" :href="snapshot" :download="component.name" @click="$action()"><img class="m-auto border border-dashed" :src="snapshot"/></a>
         </div>
     </transition>
 
@@ -370,6 +371,7 @@ export default {
         // MokaBgcolor,
         // MokaEditorPlugins
     },
+    props:['component'],
     data:()=>({
         addType: false,
         newType: '',
@@ -461,13 +463,13 @@ export default {
         },
         //check if loaded component has blocks
         hasblocks(){
-            if ( !this.$attrs.component ) this.$router.push('dashboard')
-            this.doc = this.$attrs.blocks.json //this.$attrs.component.json
+            if ( !this.component ) this.$router.push('dashboard')
+            this.doc = this.$attrs.blocks.json //this.component.json
             this.doc.id ? null : this.doc.id = this.$randomID()
-            this.page.template_id = this.$attrs.component.blocks_id
-            this.page.component = this.$attrs.component.id
-            this.page.blocks = this.$attrs.component
-            this.mycomponent = this.$attrs.component
+            this.page.template_id = this.component.blocks_id
+            this.page.component = this.component.id
+            this.page.blocks = this.component
+            this.mycomponent = this.component
             
             
             return true
@@ -480,6 +482,9 @@ export default {
         
     },
     methods:{
+        maincontext(){
+            console.log ( 'main context menu')
+        },
         addPlugin(plugin){
             let obj = {
                 id : this.$randomID(),
@@ -497,7 +502,7 @@ export default {
         },
          //export blocks as JSON file 
         exportJSON(){
-            let json = JSON.parse(JSON.stringify(this.$attrs.component))
+            let json = JSON.parse(JSON.stringify(this.component))
             delete json.id
             delete json.autosave
             let vm = this
@@ -540,12 +545,12 @@ export default {
             if ( this.articles ){
                 let inUseTemplate = this.articles.filter ( article => { 
                     console.log ( article.component.id )
-                    return parseInt(article.component.id) === parseInt(this.$attrs.component.id)
+                    return parseInt(article.component.id) === parseInt(this.component.id)
                 })
                 if ( inUseTemplate ){
                     console.log ( 'savingPage ...')
                     inUseTemplate.forEach ( templ => {
-                        templ.blocks = this.$attrs.component
+                        templ.blocks = this.component
                         this.$http.put ( 'articles/' + templ.id , templ ).then ( response => {
                             console.log ( 'update article ' , templ.title )
                         })
@@ -623,10 +628,8 @@ export default {
         },
         //duplicate current element
         duplicateElement(current){
-            
-            delete this.editor.current.parent    
-            var parent = jp.parent ( this.$attrs.component , '$..blocks[?(@.id=="' + current.id + '")]' )
-            console.log ( parent )
+            let component = this.$mapState().desktop.tabs[this.$mapState().desktop.currentTab].blocks
+            var parent = jp.parent ( component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
             let i 
             if ( parent ){
                 parent.forEach ( (p,index) => {
@@ -817,19 +820,19 @@ export default {
         //     }
         //     options = { type: "dataURL" , useCORS: true , scale: 0.50 }
         //     let screenshot = await this.$html2canvas(el, options)
-        //     //if ( this.$attrs.component.image && this.$attrs.component.image.id ){
-        //     //    this.$http.delete('/upload/files/' + this.$attrs.component.image.id ).then ( resp => {
+        //     //if ( this.component.image && this.component.image.id ){
+        //     //    this.$http.delete('/upload/files/' + this.component.image.id ).then ( resp => {
         //     //        //console.log ( resp )
         //     //    })
         //     //}
-        //     this.srcToFile ( screenshot ,  'w-preview-' + this.$attrs.component.name.replaceAll(' ','') + '.jpg' , 'image/jpg' ).then ( resp => { 
+        //     this.srcToFile ( screenshot ,  'w-preview-' + this.component.name.replaceAll(' ','') + '.jpg' , 'image/jpg' ).then ( resp => { 
         //         //console.log ( 'src to file => ' , resp )
         //         let formData = new FormData()
 
         //         formData.append("file", resp )
         //         formData.append("folder","preview")
         //         formData.append('thumbs',0)
-        //         formData.append('url','/uploads/preview/w-preview-' + this.$attrs.component.name.replaceAll(' ','') + '.jpg')
+        //         formData.append('url','/uploads/preview/w-preview-' + this.component.name.replaceAll(' ','') + '.jpg')
         //         this.$http.post("upload/file", 
         //             formData ,
         //             {   
@@ -929,7 +932,8 @@ export default {
     },
     mounted(){
         let vm = this
-        this.$store.dispatch ( 'setComponent' , this.$attrs.component )
+
+        this.$store.dispatch ( 'setComponent' , this.component )
         this.timer = window.setInterval (()=>{
             
             let blocks = {
@@ -941,7 +945,7 @@ export default {
             }
             console.log ( 'autosave' , data )
             /*
-            this.$api.service ( 'components' ).patch ( vm.$attrs.component._id , data ).then ( result =>{
+            this.$api.service ( 'components' ).patch ( vm.component._id , data ).then ( result =>{
                 console.log ( 'Autosaved =>'  , result.data )
             }).catch ( error => {
                 this.$message ( 'Autosave error please check your logs')

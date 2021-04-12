@@ -1,11 +1,16 @@
 <template>
 <div class="flex flex-col">
-    <div v-if="templates" class="flex flex-row flex-wrap justify-around p-4">
-        
-        <template v-for="(template,index) in mokatemplates">
-            <div class="w-48 flex flex-col mb-4 cursor-pointer" v-if="index>=start && index < (start+limit)" @click="$emit('set',template._id,template.blocks_id,template)" :title="template.category">
+    <div class="flex flex-row my-1 p-1">
+        <span>Category</span> 
+        <select v-model="filter" class="ml-2 w-full">
+        <option v-for="category in $mapState().datastore.dataset.setup[0].categories.components" :value="category">{{ category }}</option>
+    </select>
+    </div>
+    <div v-if="loadTemplates" class="flex flex-row flex-wrap justify-around p-4">
+        <template v-for="(template,index) in templates">
+            <div class="w-48 flex flex-col mb-4 cursor-pointer" v-if="index>=start && index < (start+limit)" @click="setTemplate(template)" :title="template.category">
                 <div class="flex flex-row items-center justify-between text-gray-600">
-                    <span class="text-sm">{{ template.name }}</span>
+                    <span class="text-xs">{{ template.name }}</span>
                     <i class="material-icons ml-1">{{ template.category === 'page' ? 'web' : 'dynamic_feed'}}</i>
                 </div>
                 
@@ -22,21 +27,32 @@
 
 <script>
 export default {
-    name: 'NuxpressoMokaTemplates',
-    props:['templates'],
+    name: 'WhoobeComponents',
     data:()=>({
         start: 0,
         limit: 12,
-        filter: 'template'
+        templates:null,
+        filter: 'page'
     }),
     computed: {
-        mokatemplates(){
-            return this.templates.filter(comp=>{ return comp.category === 'template' || comp.category === 'page' } )
+        loadTemplates(){
+            this.templates = this.$mapState().datastore.dataset.components.filter ( templ => {
+                return templ.category === this.filter
+            })
+            return true
+        }
+    },
+    watch:{
+        filter(v){
+            this.templates = this.$mapState().datastore.dataset.components.filter ( templ => {
+                return templ.category === v
+            })
         }
     },
     methods: {
         background(template){
             let image = ''
+            return this.$imageURL ( template.image ) ? this.$imageURL(template.image): 'img/no-image.png'
             template.image && template.image.url ?
                 image = template.image.url : 
                     template.image_uri ? image = template.image_uri : ''
@@ -46,7 +62,7 @@ export default {
             return image
         },
         next(){
-            if ( this.start < ( this.mokatemplates.length - this.limit ) ){
+            if ( this.start < ( this.templates.length - this.limit ) ){
                 this.start += this.limit
             }
         },
@@ -55,6 +71,22 @@ export default {
                 this.start -= this.limit
             }
             
+        },
+        setTemplate(template){
+            this.$api.service ( 'components' ).get ( template._id ).then ( result => {
+                console.log ( result )
+                this.$mapState().datastore.currentArticle.blocks = result
+                this.$mapState().datastore.currentArticle.component = result._id
+                this.$mapState().datastore.currentArticle.template_id = result._id 
+                this.$mapState().datastore.dataset.articles.map ( arts => {
+                    if ( arts._id === this.$mapState().datastore.currentArticle._id ){
+                        arts.template_id = this.$mapState().datastore.currentArticle.template_id
+                    }
+                })
+                this.$action()
+            })
+            //this.$mapState().datastore.currentArticle.template_id = template._id
+            //this.$mapState().datastore.currentArticle.blocks = template
         }
     }
 }

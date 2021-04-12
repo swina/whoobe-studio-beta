@@ -6,10 +6,11 @@
         <img src="../assets/whoobe-logo-2-colors.svg" class="w-64 grayscale m-auto"/>
         <div class="text-gray-700 text-sm -mt-4w-64 text-right font-hairline">S T U D I O</div>
       </div>
-      <div v-if="firstRun" class="text-sm text-gray-500 my-4 border p-2 border-gray-600 rounded">
-        <p>Welcome to MOKAStudio</p>
-        <p>Looks like this the first time you are running MOKAStudio.</p>
-        <p>A user is needed in order to work with MOKAStudio.</p>
+      <div class="text-sm text-gray-500 my-4 border border-gray-600 rounded" v-if="!activeProject">
+        <div class="bg-gray-800 p-1">Select a project</div>
+        <select v-model="currentProject" class="w-full text-base font-sans">
+          <option v-for="project in $mapState().datastore.workspace" :value="project">{{ project }}</option>
+        </select>
       </div>
       <div class="flex flex-row m-auto justify-around">
         <div v-if="!firstRun">
@@ -46,12 +47,26 @@ export default {
   components: {
   },
   data:()=>({
+    workspace:null,
+    activeProject: null,
     showLogin: false,
     email: '',
     password: '',
     loginOK: false,
-    firstRun: false
+    firstRun: false,
+    currentProject: ''
   }),
+  watch:{
+    currentProject(project){
+      if ( project ){
+        this.$api.service('workspace').get ( project ).then ( res => {
+          window.localStorage.setItem ( 'whoobe-project' , JSON.stringify ( res ) )
+          window.localStorage.setItem ( 'moka-strapiurl' , res.url )
+          location.reload()
+        })
+      }
+    }
+  },
   computed:{
     ...mapState ( [ 'moka' , 'user'] ),
     logged(){
@@ -70,6 +85,15 @@ export default {
   },
  
   beforeMount(){
+    
+    window.localStorage.getItem('whoobe-project') === null ?  
+      this.activeProject = '' : 
+        this.activeProject = window.localStorage.getItem('whoobe-project')
+    if ( this.activeProject ){
+      this.$api.service('workspace').get ( this.activeProject.name ).then ( res => {
+        window.localStorage.setItem('whoobe-project',JSON.stringify(res))
+      })
+    }
     let vm = this
     this.$http.get ( 'elements' ).then ( res => {
       let dataset = {

@@ -1,21 +1,40 @@
 <template>
     <div>
-        <i :class="'material-icons moka-icons z-max fixed md:hidden top-0 left-0 m-1 ' + el.css.css" v-if="el.element === 'menu' && el.responsive" @click="showmenu">menu</i>
-        <transition name="fade">
-            <nav v-if="menu_show" :class="el.css.responsive"> 
-                <i :class="'bi-list moka-icons z-max md:hidden top-0 left-0 m-1 text-3xl ' + el.css.css" v-if="el.element === 'menu' && el.responsive" @click="showmenu"></i>
-                <div v-for="(item,i) in el.items" :class="el.css.css + ' cursor-pointer relative p-1'"> 
+        <i :class="'bi-list text-2xl z-highest absolute top-0 left-0 m-1 ' + el.css.css" v-if="!menu_show && el.element === 'menu' && el.responsive" @click="nested=null,menu_show=!menu_show"></i>
+            <nav :class="classe + ''" v-if="!nested"> 
+                <i :class="'bi-chevron-left moka-icons z-max top-0 left-0 m-1 text-2xl ' + el.css.responsive_items" v-if="el.element === 'menu' && el.responsive" @click="menu_show=!menu_show"></i>
+                <div v-for="(item,i) in el.items" :class="' cursor-pointer relative p-1'"> 
                     
-                    <a :class="el.css.css" :href="item.link">{{ item.label }}</a>
+                    <a v-if="!item.submenu" :class="el.css.responsive_items" :href="item.link">{{ item.label }}</a>
+                    
+                    <a v-if="item.submenu" :class="el.css.responsive_items" @click="nested=item">{{ item.label }} <span class="absolute right-0"><i class="bi-chevron-right"></i></span></a>
                     
                     
-                    <div v-if="item.submenu && item.submenu.length" :class="el.css.css + ' ml-2 flex flex-col'"> 
-                        <div v-for="sub in item.submenu">
-                            <a :class="el.css.css" :href="sub.link">{{ sub.label }}</a>
-                        </div>
-                    </div>
+                    
                 </div>
             </nav>
-        </transition>
+            <nav v-if="nested" :class="classe + ''"> 
+                <i :class="'bi-chevron-left moka-icons z-max top-0 left-0 m-1 text-2xl ' + el.css.responsive_items" v-if="el.element === 'menu' && el.responsive" @click="nested=null"></i>
+                <div v-for="sub in nested.submenu">
+                    <a :class="el.css.responsive_items" :href="sub.link">{{ sub.label }}</a>
+                    
+                </div>
+            </nav>
     </div>
 </template>
+
+<script>
+export default {
+    name: 'WhoobeResponsiveMenu',
+    data:()=>({
+        menu_show: false,
+        nested: ''
+    }),
+    props: ['el'],
+    computed: {
+        classe(){
+            return this.menu_show ? this.el.css.responsive + ' width-grow': this.el.css.responsive + ' width-grow-out'
+        }
+    }
+}
+</script>

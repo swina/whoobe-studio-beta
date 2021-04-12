@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed z-highest h-screen w-screen top-0 left-0 bottom-0 right-0">
+    <div class="fixed z-highest bg-white h-screen w-screen top-0 left-0 bottom-0 right-0">
         <div class="absolute z-highest top-0 right-0 h-8 px-2 flex flex-row items-center text-gray-400 text-xls" >
             <i class="material-icons" @click="$emit('close')">close</i>
         </div>

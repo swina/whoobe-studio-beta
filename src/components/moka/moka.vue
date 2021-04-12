@@ -1,8 +1,9 @@
 <template>
-    <div editor-container class="w-screen relative">
+    <div editor-container class="w-screen relative" :init="loadComponent" :key="$randomID()">
         <div class="w-full" v-if="!preview">
             <whoobe-editor v-if="component" 
-
+                :id="$randomID()"
+                :key="$randomID()"
                 :component="component" 
                 :blocks="$attrs.blocks ? $attrs.blocks : component.json" 
                 @save="save"  
@@ -62,6 +63,7 @@ export default {
     //components: { MokaEditor, MokaPreview  },
     components: { WhoobeEditor , MokaPreview },
     data:()=>({
+        loaded: false,
         loading: false,
         component: null,
         preview: false,
@@ -76,6 +78,15 @@ export default {
     }),
     computed: {
         ...mapState ( ['moka','editor'] ),
+        loadComponent(){
+            if ( parseInt(this.$attrs.tab) === parseInt(this.$mapState().desktop.currentTab) && !this.loaded ){
+                this.component = this.$attrs.blocks
+                this.$store.dispatch ( 'setComponent' , this.component )
+                console.log ( this.editor.component.name )
+                this.loaded = true
+            }
+            return true
+        },
         devMode(){
              if ( typeof webpackHotUpdate === 'undefined' ) {
                  
@@ -85,7 +96,8 @@ export default {
         },
     },
     mounted(){
-        this.component = this.editor.component //this.$store.getters.component
+        
+        //this.$store.getters.component
         //if ( process.env.NODE_ENV === 'development' ){
         //    this.$http.defaults.headers.common = {
         //        'Authorization': window.localStorage.getItem('nuxpresso-jwt')

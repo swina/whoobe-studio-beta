@@ -6,10 +6,15 @@
         v-if="doc"
         :key="randomID"
         :class="classe(doc.css)" :style="doc.style + ' ' +  background(doc)" :ref="doc.id">
+         <div videobg v-if="doc.image && (doc.image.ext==='.mp4' || doc.image.ext==='webm' || doc.image.url.indexOf('.mp4') > -1)" :class="'fixed z-0 ' + doc.css.css">  
+            <video playsinline :poster="doc.image.previewUrl" class="object-cover h-full w-full" autoplay loop>
+                <source :src="doc.image.url"/>
+            </video>
+        </div>
         <template v-for="(block,b) in doc.blocks">
             <moka-element
                 @click="elementAction"
-                v-if="block && !block.hasOwnProperty('blocks') || block.hasOwnProperty('items')"
+                v-if="block && !block.hasOwnProperty('blocks') && !block.hasOwnProperty('items')"
                 :key="block.id"
                 :data="$attrs.data||''"
                 :currency="$attrs.currency||null"
@@ -19,10 +24,15 @@
 
             <moka-preview-container
                 :key="block.id"
-                v-if="block && !block.hasOwnProperty('slider') && block.hasOwnProperty('blocks') && !block.hasOwnProperty('items') && !block.hasOwnProperty('image_flip') && !block.hasOwnProperty('popup') && block.type!='plugin' && !block.hasOwnProperty('collection')" @action="elementAction" 
+                v-if="block && !block.hasOwnProperty('slider') && block.hasOwnProperty('blocks') && !block.hasOwnProperty('items') && !block.hasOwnProperty('image_flip') && !block.hasOwnProperty('popup') && block.type!='plugin' && !block.hasOwnProperty('collection') && block.tag != 'menu'" @action="elementAction" 
                 :data="$attrs.data||null"
                 :currency="$attrs.currency||null"
                 :doc="block" :animation="$attrs.animation"/>
+
+            <moka-menu
+                :key="block.id"
+                :el="block"
+                v-if="block.tag === 'menu'"/>
 
             <moka-slider 
                 :key="block.id" 
@@ -87,6 +97,8 @@ import MokaFlipbox from './moka.flipbox'
 import MokaPopup from './moka.popup'
 import MokaPluginsWrapper from '@/components/Plugins.Wrapper'
 import MokaLoop from './moka.preview.loop'
+import MokaMenu from './elements/moka.menu'
+
 import { mapState } from 'vuex'
 
 import gsap from 'gsap'
@@ -98,7 +110,7 @@ import js from 'jsonpath'
 
 export default {
     name: 'MokaPreviewContainer',
-    components: { MokaElement , MokaSlider , draggable , MokaFlipbox , MokaPopup , MokaPluginsWrapper , MokaLoop },
+    components: { MokaElement , MokaSlider , draggable , MokaFlipbox , MokaPopup , MokaPluginsWrapper , MokaLoop , MokaMenu },
     props: { 
         doc : { type: Object }  
     },
@@ -152,7 +164,7 @@ export default {
             if ( !block ) return ''
             return block.hasOwnProperty('image') ?
                 //'background-image:url(' + this.$imageURL(block.image) + ')' : ''
-                block.image && block.image.url ? 
+                block.image && block.image.url && block.image.url.indexOf('.mp4') < 0 ? 
                         ' background-image:url(' + this.$imageURL(block.image) + ');' :
                              ''  : ''
         },

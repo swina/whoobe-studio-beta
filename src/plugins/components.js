@@ -44,6 +44,12 @@ const __components = {
             position: 'modal-top-right',
             component: 'moka/editor/components/whoobe.editor.block.edit'
         },
+        block_menu : {
+            title: 'Menu Edit',
+            size: 'fullscreen',
+            position: '',
+            component: 'moka/editor/components/whoobe.editor.menus'
+        },
         edit_css : {
             title: 'Edit CSS/Style',
             size: 'md',
@@ -122,11 +128,12 @@ const __components = {
             size: 'sm',
             title: 'Save Component',
             component: 'moka/moka.save.component',
-            nomodal : true
+            position : 'modal'
         },
         //save current block as component
         saveasreusable: {
-            size: 'sm',
+            size: 'md',
+            position: 'modal',
             title: 'Save Blocks as Reusable',
             component: 'editor/actions/editor.save.as.reusable'
         },
@@ -149,7 +156,7 @@ const __components = {
             component: 'editor/render/moka.plugins',
         },
         animation: {
-            size: 'sm',
+            size: 'md',
             title: 'Animation',
             component: 'moka/editor/components/editing/whoobe.editor.editing.animation',
             position: 'modal-bottom-left',
@@ -186,8 +193,22 @@ const __components = {
             title: 'Blocks tree',
             component: 'editor/settings/moka.tree.draggable',
             position: 'modal-top-right'
+        },
+        app_generate: {
+            size: 'md',
+            title: 'Website Generator',
+            component: 'settings/whoobe.settings.build'
+        },
+        whoobe_templates: {
+            size:'lg',
+            title: 'Select a template',
+            component: 'articles/moka.articles.templates'
+        },
+        whoobe_product: {
+            size: 'lg',
+            title: 'Edit product',
+            component: 'shop/products/products.edit'
         }
-
     }
 }
 

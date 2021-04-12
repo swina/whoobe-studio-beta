@@ -1,5 +1,5 @@
 <template>
-    <div ref="draggableContainer" id="draggable-container" :class="'bg-white z-highest max-h-screen max-w-screen shadow-lg  rounded text-sm overflow-hidden ' + size + height + ' ' + $attrs.position"  style="resize:both;">
+    <div ref="draggableContainer" id="draggable-container" :class="'bg-white z-highest max-h-screen max-w-screen shadow-lg rounded text-sm overflow-hidden ' + size + height + ' ' + position"  style="resize:both;">
         
         <div class="absolute z-highest top-0 right-0 h-8 px-2 flex flex-row items-center text-gray-400 text-xls" >
             <i class="material-icons" @click="$emit('close')">close</i>
@@ -90,19 +90,7 @@ export default {
                     ' h-' + this.$attrs.height : ''
         },
         position(){
-            /*
-            if ( !this.$attrs.position ){
-                if ( document.getElementById ( 'draggable-container') )
-                    document.getElementById('draggable-container').style.top = window.pageYOffset + 'px'
-            }
-            return this.$attrs.position ? ' ' + this.$attrs.position :
-                ' absolute right-0 '
-            */
-            /*
-            return !this.$attrs.modal ?
-                    ' fixed ' + this.$attrs.position :
-                        this.$attrs.modal.hasOwnProperty('fixed') ? ' fixed ' + this.$attrs.position : ' absolute top-0 right-0 '
-            */
+           return this.$attrs.position ? this.$attrs.position : 'modal'
         },
         confirm(){
             return this.$attrs.confirm ? true : false

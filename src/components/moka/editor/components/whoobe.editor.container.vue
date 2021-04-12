@@ -1,10 +1,16 @@
 <template>
     <div 
+        editor-container 
         v-if="doc"
         :level="$attrs.level" 
         :id="doc.id"  
         :class="'p-2 fill-current ' + classe(doc.css)" :style="doc.style + ' ' +  background(doc)" @dblclick="doc.blocks.length===0?$action('addcomponent'):null">
         <div v-if="doc.blocks && !doc.blocks.length && !doc.image" class="text-xs">Dblclick here to add an element</div>
+        <div videobg v-if="doc.image && (doc.image.ext==='.mp4' || doc.image.ext==='webm' || doc.image.url.indexOf('.mp4') > -1)" :class="'fixed z-0 ' + doc.css.css">  
+            <video playsinline  class="object-contain" :autoplay="false" :loop="false">
+                <source :src="doc.image.url"/>
+            </video>
+        </div>
         <template v-for="(block,b) in doc.blocks">
 
             <whoobe-element
@@ -92,10 +98,11 @@
             
             <div class="h-2 w-2 absolute bottom-0 right-0 bg-black rounded-full -m-1"></div>
             <div class="h-2 w-2 absolute bottom-0 left-0 bg-black rounded-full -m-1"></div>
-            <whoobe-floating-bar 
+            <!-- <whoobe-floating-bar
+                class="z-highest" 
                 v-if="doc.id===moka.selected" 
                 :doc="doc" 
-                @moveup="moveUp(doc.id)"/>
+                @moveup="moveUp(doc.id)"/> -->
            
             <!--<div class="absolute bottom-0 left-0 -mb-4 text-xs" v-if="doc.gsap && doc.gsap.animation">{{ doc.gsap.animation }}</div>
             -->
@@ -111,7 +118,11 @@
             </div>-->
             
         </div>
-        
+        <whoobe-floating-bar
+                class="z-highest" 
+                v-if="doc.id===moka.selected" 
+                :doc="doc" 
+                @moveup="moveUp(doc.id)"/>
     </div>
 
 </template>
@@ -277,12 +288,17 @@ export default {
             }
             return block.hasOwnProperty('style') ? block.style + stile : stile
         },
+        videoBackground(block){
+            let url = block.image.url.split('/')
+            url.splice(url.length-1,0,'e_preview')
+            return url.join('/')
+        },
         background(block){
             if ( !block ) return 
-            
-            return block.hasOwnProperty('image') ?
-                block.image && block.image.url ? 
-                    this.setImageBackground ( block.image ) : '' : ''
+            if ( block.image && block.image.url && block.image.url.indexOf('.mp4') > -1 ) return
+                return block.hasOwnProperty('image') ?
+                    block.image && block.image.url ? 
+                        this.setImageBackground ( block.image ) : '' : ''
 
                         //' background-image:url(' + block.image.previewUrl + ');background-size:cover;background-repeat:no-repeat;' + this.isSvg(block.image) :
                         //    ' background-image:url(' + block.image.url + ');' : ''  : ''        

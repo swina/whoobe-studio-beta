@@ -7,9 +7,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build-store": "vue-cli-service build --target lib --name WhoobeStore ./src/components/plugins/store/nuxpresso/custom.vue --dest ./public/plugins/store",
-    "build-snipcart" : "vue-cli-service build --target lib --name Snipcart ./src/components/plugins/snipcart/snipcart.vue --dest ./public/plugins/snipcart",
-    "build-whoobe-api" : "vue-cli-service build --target lib --name WhoobeSave ./src/components/moka/moka.save.component.vue --dest ./public/plugins/whoobe-save"
-
+    "build-snipcart": "vue-cli-service build --target lib --name Snipcart ./src/components/plugins/snipcart/snipcart.vue --dest ./public/plugins/snipcart",
+    "build-whoobe-api": "vue-cli-service build --target lib --name WhoobeSave ./src/components/moka/moka.save.component.vue --dest ./public/plugins/whoobe-save"
   },
   "dependencies": {
     "@feathersjs/authentication-client": "^4.5.11",
@@ -35,6 +34,7 @@
     "vue": "^2.6.11",
     "vue-blob-json-csv": "^0.1.7",
     "vue-burger-menu": "^2.0.5",
+    "vue-command": "^23.0.1",
     "vue-custom-element": "^3.3.0",
     "vue-draggable-resizable": "^2.2.0",
     "vue-file-agent": "^1.7.3",
@@ -45,7 +45,8 @@
     "vue-upload-component": "^2.8.20",
     "vuedraggable": "^2.24.1",
     "vuex": "^3.4.0",
-    "vuex-persist": "^3.1.3"
+    "vuex-persist": "^3.1.3",
+    "xterm": "^4.11.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.0",

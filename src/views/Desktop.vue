@@ -50,7 +50,7 @@
                     
                     <div class="pb-16 mr-16">
                         
-                        <component :id="$randomID()" v-if="desktop.tabs[currentTab]" :is="desktop.tabs[currentTab].component" :component="desktop.tabs[currentTab].component" :filter="desktop.tabs[currentTab].filter" :blocks="desktop.tabs[currentTab].blocks" @newtab="currentTab=desktop.tabs.length-1"/>
+                        <component :id="$randomID()" v-if="desktop.tabs[currentTab]" :is="desktop.tabs[currentTab].component" :component="desktop.tabs[currentTab].component" :filter="desktop.tabs[currentTab].filter" :blocks="desktop.tabs[currentTab].blocks" @newtab="currentTab=desktop.tabs.length-1" :tab="currentTab"/>
                     </div>
                 </div>
             </div>
@@ -107,6 +107,7 @@ export default {
             return index === this.currentTab ? 'bg-gray-900 text-white' : ''
         },
         activeTab(index){
+
             return index === this.currentTab ? '' : 'hidden'
         },
         newTab ( item , parent ){

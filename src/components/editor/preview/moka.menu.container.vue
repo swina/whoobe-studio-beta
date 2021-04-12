@@ -5,6 +5,7 @@
         :key="doc.id"
         :animateMe="refreshAnimation"  
         :class="classe(doc.css)" :style="doc.style + ' ' +  background(doc)" :ref="doc.id">
+       
         <template v-for="(block,b) in doc.blocks">
              
             <moka-element
@@ -30,6 +31,13 @@
                 :develop="false" 
                 :embeded="true" 
                 :doc="block"/>
+            <moka-plugins-wrapper 
+                :key="block.id"
+                v-if="block && block.type==='plugin' && block.hasOwnProperty('blocks')" 
+                :settings="block.plugin.editor.settings"  
+                :block="block"  
+                :plugin="block" 
+                :component="block.plugin.component"/>
         </template>
         
     </div>
@@ -39,6 +47,7 @@
 <script>
 import MokaElement from '@/components/editor/preview/moka.element'
 import MokaFlipbox from '@/components/editor/preview/moka.flipbox'
+import MokaPluginsWrapper from '@/components/Plugins.Wrapper'
 import { mapState } from 'vuex'
 
 import gsap from 'gsap'
@@ -48,7 +57,7 @@ const plugins = [ScrollTrigger];
 
 export default {
     name: 'MokaSliderContainer',
-    components: { MokaElement  , MokaFlipbox },
+    components: { MokaElement  , MokaFlipbox , MokaPluginsWrapper },
     props: [ 'doc'  ],
     computed:{
         ...mapState(['moka']),

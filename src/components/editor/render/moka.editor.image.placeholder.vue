@@ -10,7 +10,10 @@
             {{ $attrs.image.name}} <span v-if="$attrs.image.size">{{ Math.round(parseFloat($attrs.image.size),2) }} Kb</span>
         </div>
         <button v-if="!$attrs.image" @click="$emit('media')">Select Media</button>
-        <button v-if="$attrs.image && ( $attrs.image.url || editor.current.link )" @click="$emit('noimage')">Remove</button>
+        <div v-if="$attrs.image && ( $attrs.image.url || editor.current.link )" class="flex flex-row">
+            <button @click="$emit('noimage')">Remove</button>
+            <button @click="imageEditor($attrs.image)">Image Editor</button>
+        </div>
     </div>
 </template>
 
@@ -49,6 +52,11 @@ export default {
         getImage( img ){
             return img.url.includes('http') ? 
                     img.url : (window.localStorage.getItem('moka-strapiurl') || process.env.VUE_APP_API_URL ) + img.url.substring(1)
+        },
+        imageEditor(img){
+            window.localStorage.setItem('whoobe-image-url',this.$imageURL(img.url))
+            this.$action ( 'image_editor' )
+
         }
     }
 }

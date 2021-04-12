@@ -3,6 +3,7 @@
 
     <button @click="importFile=!importFile">Import</button>
     <button @click="exportFile=!exportFile">Export</button>
+    <button @click="slugify">Slugify</button>
     <div class="flex flex-col text-sm p-4" v-if="products">
         
         <div :class="'w-full bg-gray-400 grid grid-cols-' + cols">
@@ -13,9 +14,9 @@
         </template>
         </div>
         <template v-for="product in products">
-            <div :class="'w-full p-1 border-b border-l border-r grid grid-cols-' + cols" v-if="product.name">
+            <div :key="product._id" :class="'w-full p-1 border-b border-l border-r cursor-pointer grid grid-cols-' + cols" v-if="product.name" @click="$store.dispatch('currentProduct',product),$action('whoobe_product')">
                 <template v-for="field in Object.keys(schema)">
-                    <div v-if="schema[field].list">
+                    <div :key="field" v-if="schema[field].list">
                         <span v-if="schema[field].type==='string'">{{ product[field] }}</span>
                         <img :src="product[field]" v-if="schema[field].type==='image'" class="w-24"/>
                         <span v-if="schema[field].type==='array'">
@@ -56,12 +57,14 @@
 import MokaProductsImport from './products.import'
 import MokaProductsExport from './products.export'
 import { mapState } from 'vuex'
+import productsImportVue from './products.import.vue'
 export default {
     name: 'MokaProducts',
     data:()=>({
         importFile: false,
         exportFile: false,
         products: null,
+        limit: 200,
         cols: 0
     }),
     components:{
@@ -85,11 +88,22 @@ export default {
         },
         exportData(){
             return
+        },
+        slugify(){
+            this.products.map ( prod => {
+                prod['slug'] = this.$slugify(prod.name)
+                this.$api.service('products').patch ( prod._id , prod ).then ( res => {
+                    console.log ( res )
+                })
+            })
         }
     },
     mounted(){
         this.$api.service('products').find( { query: { $limit: this.limit , $skip: this.start }}).then ( res => {
             this.products = res.data
+            this.products.map ( product => {
+                console.log ( this.$slugify ( product.name ) )
+            })
         })
         /*this.$http.get ( 'content-type-builder/content-types' ).then ( res => {
             const uid = res.data.data.filter ( ct => {

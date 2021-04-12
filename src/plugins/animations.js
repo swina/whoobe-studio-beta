@@ -460,12 +460,37 @@ gsap.registerEffect({
     extendTimeline: true, 
 });
 
+/**
+ * Grow height (height from 0 to 100%) effect
+ */
+ gsap.registerEffect({
+    name: "rotate3DY",
+    effect: (targets, config) => {
+        return gsap.fromTo( targets, 
+            {
+                opacity:1
+            },
+            {
+                opacity:1,
+                rotateY:"28deg",
+                transformPerspective: "80vw",
+                duration:config.duration,
+                delay: config.delay,
+                ease: config.ease
+            }
+        )
+    },
+    defaults: {duration: duration , delay: 1,ease:"power1"}, //defaults get applied to any "config" object passed to the effect
+    extendTimeline: true, 
+});
+
+
 // ---- YOUR ANIMATIONS GO HERE ---
 
 // --- END OF YOUR ANIMATIONS ---
 
 // ADD YOUR ANIMATION name to the gsapEffect array
-const gsapEffects = [ 'fade' , 'scale' , 'scale-in' , 'scale-out' , 'flip-x' , 'flip-y' , 'slide-left' , 'slide-right' , 'slide-top' , 'slide-down', 'rotate' , 'rotate-scale' , 'rotate-hover' , 'grow-width' , 'width-reverse' , 'close-left' , 'close-right' , 'grow-height' ]
+const gsapEffects = [ 'fade' , 'scale' , 'scale-in' , 'scale-out' , 'flip-x' , 'flip-y' , 'slide-left' , 'slide-right' , 'slide-top' , 'slide-down', 'rotate' , 'rotate-3DY' , 'rotate-scale' , 'rotate-hover' , 'grow-width' , 'width-reverse' , 'close-left' , 'close-right' , 'grow-height' ]
 
 // DO NOT REMOVE OR CHANGE THE FOLLOWING
 const gsapEase = [ 'none' , 'power1' , 'power2' , 'power3' , 'power4' , 'back' , 'elastic','bounce','rough','slow','steps','circ','expo','sine' ]

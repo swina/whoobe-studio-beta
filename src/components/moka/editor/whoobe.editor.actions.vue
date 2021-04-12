@@ -1,5 +1,5 @@
 <template>
-    <div v-if="actions[editor.action]">
+    <div v-if="actions[editor.action] || actions[editor.subaction]">
 
         <whoobe-modal-fullscreen
             v-if="modal.size==='fullscreen'"
@@ -14,7 +14,7 @@
             v-if="modal.size!='fullscreen'" 
             :modal="modal"
             :size="modal.size||''"
-            :position="modal.position||''"
+            :position="modal.position||'modal'"
             :height="modal.height||''"
             buttons="none"
             :resize="true"
@@ -84,7 +84,7 @@ export default {
                     // }
                     comp = this.actions.media.component
                 }
-                if ( this.editor.action === 'block_edit' && current.tag === 'element' && ( current.element === 'div' || current.element === 'p' || current.element === 'h' ) ){
+                if ( this.editor.action === 'block_edit' && current.tag === 'element' && ( current.element === 'div' || current.element === 'p' || current.element === 'h' || current.element === 'span' ) ){
                     comp = 'moka/editor/components/editing/whoobe.editor.multi.editing'
                     // this.modal.size = 'lg'
                     // this.modal.title = 'Edit content'
@@ -97,12 +97,7 @@ export default {
             } else {
                 comp = this.actions[this.editor.action].component
             }
-            // if ( this.editor.action === 'customize' ){
-            //     comp = this.actions[this.editor.action].component
-            // }
-            // if ( this.editor.action === 'animation' ){
-            //     comp = this.actions[this.editor.action].component
-            // }
+            
             return () =>  import( '@/components/' + comp )
             
         },

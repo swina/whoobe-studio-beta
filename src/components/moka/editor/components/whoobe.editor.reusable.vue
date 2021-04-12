@@ -134,8 +134,12 @@ export default {
                 //if ( !target || this.addBlock ){
                 //    target = this.doc
                 //}
-                this.$mapState().editor.current.blocks.push ( component )
-                this.$action()
+                if ( !this.$attrs.emit ){
+                    this.$mapState().editor.current.blocks.push ( component )
+                    this.$action()
+                } else {
+                    this.$emit ( 'block' , component )
+                }
             }
         }
     },

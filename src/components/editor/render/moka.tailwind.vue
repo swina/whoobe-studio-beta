@@ -12,7 +12,7 @@
                 <input class="dark w-full" type="text" v-model="editor.current.link"/>
                 <label>Article/Page</label>
                 <select class="dark w-full" v-model="editor.current.link">
-                    <option v-for="(opt,o) in moka.articles" :value="'/' + opt.slug">{{ opt.title }}</option>
+                    <option v-for="(opt,o) in $mapState().datastore.dataset.articles" :value="'/' + opt.slug">{{ opt.title }}</option>
                 </select>
                 <label>Anchor</label>
                 <input class="dark w-full" type="text" v-model="editor.current.anchor"/>

@@ -54,13 +54,13 @@
                     
                     
                     <a :class="el.css.css" v-if="!item.submenu && !$attrs.develop && item.link && !item.link.includes('http')" :href="item.link">
-                        <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
+                        <span v-if="!item.icon">{{ item.label }}</span>
                         <span v-else><i :class="'bi-' + item.icon"></i></span> 
                         <i v-if="item.submenu" class="material-icons moka-icons">arrow_drop_down</i>
                     </a>
                     
                     <div v-else @mouseover="menuover=i" :class="el.css.css" @click="menuover=i">
-                        <span v-if="!item.hasOwnProperty('icon') && !item.icon">{{ item.label }}</span>
+                        <span v-if="!item.icon">{{ item.label }}</span>
                         <span v-else><i :class="'bi-' + item.icon"></i></span>  
                         <i v-if="item.submenu && item.submenu.length" :class="el.css.css + ' material-icons moka-icons text-sm'">arrow_drop_down</i>
                     </div>
