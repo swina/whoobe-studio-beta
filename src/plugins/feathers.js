@@ -11,16 +11,16 @@ const socket = io(  window.localStorage.getItem('moka-strapiurl') , //'http://lo
   }
 )
 
-// const socketWhoobe = io('http://localhost:3033' ,
-//   {
-//     transports: ['websocket'],
-//     polling: {
-//       extraHeaders: {
-//         Authorization: 'Basic000002121212121212222'
-//       }
-//     }
-//   }
-// )
+const socketWhoobe = io('http://localhost:3031' ,
+   {
+     transports: ['websocket'],
+     polling: {
+       extraHeaders: {
+         Authorization: 'Basic000002121212121212222'
+       }
+     }
+   }
+)
 
 
 
@@ -30,9 +30,11 @@ const api = feathers()
   }))
   //.configure(auth({ storage: window.localStorage }))
 
-// const whoobeApi = feathers()
-//   .configure(socketio(socketWhoobe,{timeout:20000}))
-//   .configure(auth({ storage: window.localStorage }))
+const whoobeApi = feathers()
+   .configure(socketio(socketWhoobe,{timeout:20000}))
+   .configure(auth({ storage: window.localStorage }))
+
+
 
 const apiserver = api
 
@@ -41,7 +43,7 @@ export default {
   install: function (Vue) {
 
     Vue.prototype.$api = api
-    // Vue.prototype.$apiwhoobe = whoobeApi
+    Vue.prototype.$apiwhoobe = whoobeApi
 
     Vue.prototype.$datastore = ( name = '' ) =>{
       if ( !name ) return

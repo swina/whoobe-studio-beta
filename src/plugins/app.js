@@ -45,6 +45,11 @@ const menu = {
     { label: 'Settings' , icon: 'settings' , component: 'MokaSettings' , path: 'settings/settings' , filter: '' },
     { label: 'Share'  , icon: 'share' , component: 'MokaMarketing' , path: 'tools/social/moka.social.post' , filter: '' },
     { label: 'Publish' , icon: 'dynamic_form' , component: 'WhoobeSettingsBuild' , filter: 'publish' , path: 'settings/whoobe.settings.build' },
+    { label: 'TSI' , icon: 'list' , component: null , path: '' , filter: 'tsi' ,
+        items: [
+            { label: 'Dashboard' , icon: 'palette' , component: 'TSIPluginDashboard' , filter: 'products' , path: 'plugins/tsi/admin/dashboard' }
+        ]
+    }, 
     /*
         { label: 'Remote' , icon: 'dynamic_form' , component: null , filter: 'remote' ,
             items: [
