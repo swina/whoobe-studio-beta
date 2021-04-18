@@ -9,8 +9,7 @@
           <button
             class="ml-2 items-center"
             id="upload_widget"
-            @click="$action('cloudinary')"
-          >
+            @click="$action('cloudinary')">
             <i class="material-icons">upload</i> <span>Cloudinary</span>
           </button>
           <!-- <moka-cloudinary-upload class="mx-2" v-if="cloudinary" :config="cloudinary.config" @cloudinary="addImageCloudinary"/> -->
@@ -18,9 +17,7 @@
 
         <!--<a href="#" @click="gallery=!gallery" class="text-right"><i class="material-icons" v-if="!gallery">grid_on</i><i class="material-icons" v-if="gallery">list</i></a>-->
       </div>
-      <div
-        class="text-sm justify-start items-center grid grid-cols-7 mt-1 bg-gray-200 py-1"
-      >
+      <div class="text-sm justify-start items-center grid grid-cols-7 mt-1 bg-gray-200 py-1">
         <div class="col-span-3">
           <label class="text-sm">Import from URL</label>
           <input type="text" class="w-3/4" v-model="imageURL" />
@@ -31,8 +28,7 @@
             type="text"
             class="w-3/4"
             v-model="unsplash"
-            placeholder="unsplash => type a keyword"
-          />
+            placeholder="unsplash => type a keyword"/>
         </div>
         <div class="col-span-2">
           <label class="ml-2">Search</label>
@@ -40,8 +36,7 @@
             type="text"
             v-model="search"
             placeholder="search"
-            class="mr-2 w-2/3"
-          />
+            class="mr-2 w-2/3"/>
         </div>
       </div>
       <!--<div class="bg-gray-200 h-full border-1 rounded-lg shadow p-8 relative overflow-y-auto">-->
@@ -49,22 +44,13 @@
       <div :class="'flex flex-wrap border rounded p-4 h-3/4 overflow-y-auto grid ' + isEdit" v-if="files && !openCloudinary">
         <template v-for="(element, n) in files">
 
-          <div :key="n"
-            class="px-2 bg-white text-xs cursor-pointer mb-2"
+          <div :key="n" class="px-2 bg-white text-xs cursor-pointer mb-2"
             @click="setImage(element), (selected = element)"
             :title="element.name"
-            v-if="element.hasOwnProperty('name')"
-          >
-            <div
-              :class="
-                'mb-1 overflow-hidden border-4 border-transparent ' +
-                active(element)
-              "
-            >
+            v-if="element.hasOwnProperty('name')">
+            <div :class="'mb-1 overflow-hidden border-4 border-transparent ' + active(element)">
               <div class="relative pt-32 bg-gray-700">
-                <div
-                  class="flex items-center text-center h-full justify-center absolute h-48 top-0 left-0 right-0 bottom-0"
-                >
+                <div class="flex items-center text-center h-full justify-center absolute h-48 top-0 left-0 right-0 bottom-0">
                   <img
                     v-if="element.url && element.mime.includes('image')"
                     :src="$imageURL(element)"
@@ -160,10 +146,11 @@
               @fullscreen="fullscreen = !fullscreen"
             />
           </div>
+
         </moka-modal>
         <!-- </div> -->
       </transition>
-
+      
 
 
       <transition name="fade">
@@ -347,7 +334,7 @@ export default {
     selected: null,
     search: "",
     start: 0,
-    limit: 10,
+    limit: 300,
     gallery: true,
     uploadFile: false,
     edit: false,
@@ -360,6 +347,7 @@ export default {
     cloudinary: null,
     openCloudinary: false,
     files: null,
+    allFiles: null,
     fullscreen: false,
   }),
   computed: {
@@ -387,17 +375,49 @@ export default {
         v ? this.$action('media_from_url') : null
     },
     start(v) {
-      console.log(v);
       this.$api
         .service("media")
-        .find({ query: { $limit: this.limit, $skip: v } })
+        .find({ query: { 
+          $limit: this.limit, $skip: v , $sort: { updatedAt: -1 } , name: { $gte: this.search } } 
+        })
         .then((response) => {
           this.files = response.data;
           this.total = response.total;
         });
     },
+    search(v){
+      if ( v && v.length > 2 ) { 
+         this.files = this.datastore.dataset.media.filter ( f => {
+           return f.name.includes(v)
+         })
+      } else {
+         this.files = this.datastore.dataset.media
+      }
+    }
   },
   methods: {
+    
+    query(){
+      let vm= this
+      console.log ( vm.search )
+       this.$api
+        .service("media")
+        .find(
+          { query: 
+            { 
+              $limit: this.limit, 
+              $skip: this.start , 
+              $sort: { updatedAt: -1 }
+            } 
+          })
+        .then((response) => {
+          console.log ( response )
+          this.files = response.data;
+          this.allFiles = response.data
+          this.total = response.total;
+          this.$store.dispatch('dataset' , { table: 'media' , data: response.data })
+        });
+    },
     autoSize(index) {
       let w = 40 - (index + 1) * 8;
       return "w-" + w;
@@ -542,20 +562,23 @@ export default {
   },
 
   mounted() {
-    this.$api
-      .service("media")
-      .find({ query: { $limit: this.limit, $skip: this.start } })
-      .then((response) => {
-        this.files = response.data;
-        this.total = response.total;
+    
+    this.query()
+    
+    //media deleted
+    this.$api.service("media").on("deleted", (data) => {
+      this.allFiles.filter ( image => {
+        return image._id != data._id
+      })
+      this.files.filter ( image => {
+        return image._id != data._id
+      })
+      this.$message("Media deleted");
     });
-    //this.files = this.datastore.dataset.media
-    this.$api.service("media").on("patched", (message) => {
-      this.$message("Media updated");
-    });
+    
+    //new media created
     this.$api.service('media').on('created', (data) => {
-      console.log ( 'Created media => ' , data )
-      this.files.unshift ( data )
+      this.allFiles.unshift ( data )
       this.total = this.total+1
     })
     /*

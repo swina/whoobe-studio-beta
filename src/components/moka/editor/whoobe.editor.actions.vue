@@ -1,8 +1,8 @@
 <template>
     <div v-if="actions[editor.action] || actions[editor.subaction]">
 
-        <whoobe-modal-fullscreen
-            v-if="modal.size==='fullscreen'"
+        <whoobe-modal-fullscreen 
+            v-if="modal.size==='full' || modal.size==='fullscreen'" :position="modal.position" 
             @close="$action()">
             <div slot="title">{{ actions[editor.action].title }}</div>
             <div slot="content">
@@ -11,7 +11,7 @@
         </whoobe-modal-fullscreen>
     
         <moka-modal 
-            v-if="modal.size!='fullscreen'" 
+            v-if="modal.size!='full' && modal.size != 'fullscreen'" 
             :modal="modal"
             :size="modal.size||''"
             :position="modal.position||'modal'"

@@ -35,7 +35,7 @@ export default {
         }
     },
     mounted(){
-        if ( !this.css && !this.css.length ) return
+        if ( !this.css ) return
         let classes = this.css.split(' ')
         classes.forEach ( cl => {
             if ( this.options.indexOf ( cl ) > -1 ){

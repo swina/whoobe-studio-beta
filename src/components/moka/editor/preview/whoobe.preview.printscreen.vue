@@ -26,8 +26,8 @@ export default {
         //save screenshot of blocks
         save(screenshot){
             if ( screenshot ){
-                this.$mapState().editor.component.image_uri = screenshot
-                this.$mapState().editor.component.image = screenshot
+                this.$mapState().editor.component.image_uri = screenshot.replace('.jpg','.webp')
+                this.$mapState().editor.component.image = screenshot.replace('.jpg','.webp')
                     //!screenshot.url.includes('http') ? 
                         //process.env.VUE_APP_API_URL + screenshot.url.replace('/','') : 
                             //screenshot.url
@@ -61,14 +61,14 @@ export default {
             options = { type: "dataURL" , useCORS: true , scale: 0.50 }
             let screenshot = await this.$html2canvas(el, options)
             
-            this.srcToFile ( screenshot ,  'w-preview-' + this.$mapState().editor.component.name.replaceAll(' ','') + '.jpg' , 'image/jpg' ).then ( resp => { 
+            this.srcToFile ( screenshot ,  'preview_' + this.$mapState().editor.component.name.replaceAll(' ','_') + '.jpg' , 'image/jpg' ).then ( resp => { 
                 //console.log ( 'src to file => ' , resp )
                 let formData = new FormData()
 
                 formData.append("file", resp )
                 formData.append("folder","preview")
                 formData.append('thumbs',0)
-                formData.append('url','/uploads/preview/w-preview-' + this.$mapState().editor.component.name.replaceAll(' ','') + '.jpg')
+                formData.append('url','/uploads/preview/preview_' + this.$mapState().editor.component.name.replaceAll(' ','_') + '.jpg')
                 this.$http.post("upload/file", 
                     formData ,
                     {   

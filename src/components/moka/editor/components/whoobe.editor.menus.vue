@@ -1,11 +1,11 @@
 <template>
-    <div v-if="menu" class="w-full z-max bg-gray-100 text-black overflow-y-auto h-screen mb-2 shadow">
+    <div v-if="menu" class="w-full z-max bg-gray-400 text-black overflow-y-auto h-screen mb-2 shadow">
         <button @click="tab='items'" class="w-24" :class="tab==='items'?'bg-blue-400':''">Items</button>
         <button @click="tab='css'" class="w-24" :class="tab==='css'?'bg-blue-400':''">Customize</button>
         <button @click="tab='responsive'" class="w-24" :class="tab==='responsive'?'bg-blue-400':''">Responsive</button>
         
         <div v-if="tab==='items'" class="p-6 flex flex-row border">
-            <div class="w-1/3 border rounded px-2">
+            <div class="w-1/4 border rounded px-2">
                 <div class="flex flex-col items-center cursor-pointer p-1 my-1">
                 
                     <div class="flex flex-row items-center">
@@ -18,7 +18,7 @@
                     <div class="relative text-gray-800 overflow-y-auto h-full w-full p-1">
                         <draggable v-model="items" class="relative">
                             <div v-for="(item,i) in items" class="flex flex-col text-sm cursor-pointer pb-1" v-if="showItems">
-                                <div class="bg-gray-600 text-white p-1 flex flex-col" @click="currentIndex<0||currentIndex!=i?currentIndex=i:currentIndex=-1">{{ item.label }}</div>
+                                <div class="bg-gray-600 text-white p-1 flex flex-col" @click="subIndex=-1,currentIndex<0||currentIndex!=i?currentIndex=i:currentIndex=-1,currentFocus=i">{{ item.label }}</div>
                                 <transition> 
                                     <div class="relative bg-gray-200 p-1 flex flex-col mb-1" v-if="currentIndex===i">
                                         
@@ -56,19 +56,19 @@
                 </transition>
 
             </div>
-            <div class="ml-4 flex flex-col">
-                <div v-if="currentIndex > -1 && items[currentIndex].hasOwnProperty('submenu') && items[currentIndex].submenu.length" class="border rounded p-2">
-                    <div class="flex flex-col items-center cursor-pointer p-2 my-1">
+            <div class="ml-4 flex flex-col w-1/5">
+                <div v-if="currentIndex > -1 && items[currentIndex].hasOwnProperty('submenu') && items[currentIndex].submenu.length" class="border rounded p-1">
+                    <div class="flex flex-col items-center cursor-pointer p-2">
                 
-                    <div class="flex flex-row items-center text-sm">
-                        <span class="font-bold" @click="showItems=!showItems">Submenu {{items[currentIndex].label}} Items</span> 
+                    <div class="flex flex-row items-center text-sm cursor-pointer">
+                        <span class="font-bold" @click="showItems=!showItems">{{items[currentIndex].label}} </span> 
                         <button v-if="!items[currentIndex].submenu[0].blocks"  class="xs mx-2" @click="addSubMenu(currentIndex)">Add</button>
                         <div v-if="items[currentIndex].submenu[0].blocks" class="ml-2">(block)</div>
                     </div>
                 </div>
                     <draggable v-model="items[currentIndex].submenu">
                         <div v-for="(sub,s) in items[currentIndex].submenu">
-                            <div  @click="subIndex<0||subIndex!=s?subIndex=s:subIndex=-1" class=" border p-1 bg-gray-500 text-white mb-1 text-sm">
+                            <div  @click="subIndex<0||subIndex!=s?subIndex=s:subIndex=-1" class=" border p-1 bg-gray-500 text-white mb-1 text-sm cursor-pointer">
                             {{ sub.label}}
                             </div>
                             <transition name="fade">
@@ -89,7 +89,8 @@
                                         
                                         <div class="flex p-1 border rounded">
                                             <button @click="blocks=!blocks,subIndex=s">Add Block</button>
-                                            <button class="ml-2" v-if="items[currentIndex].submenu[s].blocks" @click="items[currentIndex].submenu[s].blocks=null">Remove Block</button>
+                                            <button class="mx-2" @click="pasteFromClipboard()">Paste</button>
+                                            <button v-if="items[currentIndex].submenu[s].blocks" @click="items[currentIndex].submenu[s].blocks=null">Remove Block</button>
                                         </div>
                                         <label>Image</label>
                                         <input type="text" v-model="items[currentIndex].submenu[s].image"/>
@@ -104,6 +105,7 @@
                     </draggable>
                     <!-- {{ items[currentIndex].submenu }} -->
                 </div>
+                
                 <!-- Justify <select v-model="menu.css.align">
                     <option value=""></option>
                     <option value="justify-around">around</option>
@@ -115,6 +117,12 @@
                 <textarea v-model="menu.css.css" @focus="$subaction('customize')"/>
                 <textarea v-model="menu.css.container"/> -->
                 
+            </div>
+            <div class="w-1/2 relative" v-if="currentIndex > -1 && subIndex > -1 && items[currentIndex].submenu[subIndex].blocks">
+                <div> 
+                    <whoobe-container :doc="items[currentIndex].submenu[subIndex].blocks" :editor="false"/>
+                    <i class="absolute top-0 right-0 z-2xtop cursor-pointer material-icons p-1 bg-gray-100 rounded-full" @click="copyToClipboard(items[currentIndex].submenu[subIndex].blocks)">file_copy</i>
+                </div>
             </div>
         </div>
         <div v-if="tab==='css'" class="p-4 bg-gray-400">
@@ -171,7 +179,7 @@
             </div>
         </div>
         
-        <whoobe-menu v-if="tab!='responsive'" class="my-10 border border-dashed" :el="menu"></whoobe-menu>
+        <!-- <whoobe-menu v-if="tab!='responsive'" class="my-10 border border-dashed" :el="menu"></whoobe-menu>
     
         <transition name="fade">
             <div v-if="tab==='responsive'" class="p-4">
@@ -181,7 +189,7 @@
                 </div>
                 </div>
             </div>
-        </transition>
+        </transition> -->
 
         <transition name="slidedown">
             <moka-modal 
@@ -216,10 +224,11 @@ import WhoobeMenu from '@/components/editor/preview/elements/moka.menu'
 import WhoobeMenuResponsive from '@/components/editor/preview/elements/moka.menu.responsive'
 import WhoobeEditorReusable from '@/components/moka/editor/components/whoobe.editor.reusable'
 import WhoobeTailwind from '@/components/moka/editor/components/customize/whoobe.tailwind'
+import WhoobeContainer from '@/components/editor/preview/moka.preview.container'
 import draggable from 'vuedraggable'
 export default {
     name: 'WhoobeMenuEditor',
-    components: { draggable , MokaEditIcon , WhoobeMenu , WhoobeMenuResponsive , WhoobeEditorReusable , WhoobeTailwind },
+    components: { draggable , MokaEditIcon , WhoobeMenu , WhoobeMenuResponsive , WhoobeEditorReusable , WhoobeTailwind , WhoobeContainer },
     data:()=>({
         tab: 'items',
         menu: null,
@@ -300,6 +309,18 @@ export default {
             ).then ( result => {
             this.$store.dispatch ( 'dataset' , { table: 'articles' , data: result.data })
             })
+        },
+        pasteFromClipboard(){
+            let obj = JSON.parse ( window.localStorage.getItem('nuxpresso-clipboard') )
+            obj.id = this.$randomID()
+            obj = this.$clone(obj)
+            console.log ( obj )
+            this.menu.items[this.currentIndex].submenu[this.subIndex].blocks = obj
+        },
+        copyToClipboard(blocks){
+            window.localStorage.setItem('nuxpresso-clipboard',JSON.stringify(blocks) )
+            console.log ( 'copied' )
+            this.$message ( 'Blocks copied' )
         }
     },
 }

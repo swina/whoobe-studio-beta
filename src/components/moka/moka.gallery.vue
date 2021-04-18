@@ -299,14 +299,14 @@ export default {
         .remove(this.current)
         .then((result) => {
           //this.$http.delete ( 'components/' + this.current ).then ( result => {
-          this.dataset.splice(this.index, 1);
+          this.datastore.dataset.components.splice(this.index, 1);
           console.log(result);
         });
     },
 
     removeElement() {
       if (this.current && this.confirm) {
-        this.$attrs.components.splice(this.index, 1);
+        this.datastore.dataset.components.splice(this.index, 1);
         this.$emit("remove", this.current);
       }
     },

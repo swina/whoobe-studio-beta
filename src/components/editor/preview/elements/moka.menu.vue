@@ -14,9 +14,9 @@
             </span>
             
             
-            <div submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' fixed flex flex-col z-highest'" @mouseleave="menuover=-1">
+            <div :ref="'submenu_'+i" submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' fixed flex flex-col z-highest'" @mouseleave="menuover=-1">
                 
-                <div v-if="item.submenu[0].blocks" :class="Object.values(item.submenu[0].blocks.css).join(' ')" :style="background(item.submenu[0].blocks)">
+                <div v-if="item.submenu[0].blocks" :class="Object.values(item.submenu[0].blocks.css).join(' ')" :style="background(item.submenu[0].blocks)  + getPos(i)">
                     
                     <template v-for="block in item.submenu[0].blocks.blocks">
                         <moka-element
@@ -111,6 +111,16 @@ export default {
         },
         showmenu(){
             this.menu_show =! this.menu_show
+        },
+        getPos(i,e){
+            if ( this.menuover === i ) {
+                let posX = this.$refs['submenu_' + i][0].getBoundingClientRect().x
+                let width = this.$refs['submenu_' + i][0].clientWidth
+                let available = window.innerWidth
+                if ( ( posX + width - available ) > 0 ){
+                    this.$refs['submenu_' + i][0].style.left = (available - width) + 'px'
+                }
+            }
         },
         isOver(i){
             return i < 0 ? 'opacity-0' : this.menuover === i ? 'opacity-100 height-grow' : 'opacity-0 height-grow-out'

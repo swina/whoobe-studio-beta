@@ -2,10 +2,6 @@
     <div v-if="slider">
         <div class="flex flex-col text-sm my-2 bg-gray-200 rounded p-1">
             <div class="flex flex-row my-1 p-1 border-b">
-                <label>CSS</label>
-                <input type="text" class="w-full" v-model="slider.css" placeholder="whoobe-fullscreen-gallery"/>
-            </div>
-            <div class="flex flex-row my-1 p-1 border-b">
                 <input type="number" min="0" max="100000" title="set 0 for autoplay" v-model="slider.slider.delay"/>
                 <label class="ml-2">Autoplay Timer secs (0 = no autoplay)</label>
             </div>

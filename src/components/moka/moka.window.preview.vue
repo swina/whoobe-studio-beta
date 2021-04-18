@@ -2,6 +2,7 @@
     <div class="z-highest" @contextmenu="showContext">
         <div class="preview-context-menu" ref="contextMenu" id="contextMenu" @mouseleave="hideContextMenu" style="left:-1000px;">
             <whoobe-preview-context-menu @printscreen="printScreen=true" @html="showHtml=!showHtml"/>
+            
             <!--
             <div class="p-1 hover:bg-white hover:text-black flex flex-row items-center" @click="$action('savecomponent')">
                 <i class="material-icons mr-4">save</i>Save
@@ -103,17 +104,27 @@ export default {
             window.screen.width = s
         },
         save(screenshot){
+            let component = JSON.parse(window.localStorage.getItem('whoobe-component'))
+
             if ( screenshot ){
-                this.$mapState().editor.component.image_uri = screenshot
-                this.$mapState().editor.component.image = screenshot
+                component.image_uri = screenshot.replace('.jpg','.webp')
+                component.image = screenshot.replace('.jpg','.webp')
+                //this.$mapState().editor.component.image_uri = screenshot.replace('.jpg','.webp')
+                //this.$mapState().editor.component.image = screenshot.replace('.jpg','.webp')
+                
                     //!screenshot.url.includes('http') ? 
                         //process.env.VUE_APP_API_URL + screenshot.url.replace('/','') : 
                             //screenshot.url
             }
-            window.localStorage.setItem('whoobe-image-url',this.$imageURL(screenshot) )
-            this.editScreenshot ? 
-                this.$action ( 'filerobot' ) :
-                    this.$action('savecomponent')
+                window.localStorage.setItem('whoobe-image-url',this.$imageURL(screenshot) )
+                this.editScreenshot ? 
+                    this.$action ( 'filerobot' ) :
+                        this.$api.service ( 'components' ).patch ( component._id , component ).then ( res => {
+                            console.log ( 'saved component => ' , component , res )
+                            this.$action()
+                        })
+                        //this.$action('savecomponent')
+            
         },
         //screenshot print
         saveprint(){
@@ -173,6 +184,7 @@ export default {
                 .then(function(buf){return new File([buf], fileName, {type:mimeType});})
             );
         },
+        
     },
     mounted(){
         

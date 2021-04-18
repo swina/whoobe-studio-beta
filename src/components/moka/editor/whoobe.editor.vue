@@ -1,5 +1,5 @@
 <template>
-<div>
+<div :key="$randomID()">
     <div :class="'editor-container min-h-screen top-0 right-0 left-0 bottom-0 flex mb-20 flex-row'" v-if="component && hasblocks && !preview">
         <transition name="slideright">
         <div class="w-full overflow-y-auto overflow-x-hidden">
@@ -470,8 +470,7 @@ export default {
             this.page.component = this.component.id
             this.page.blocks = this.component
             this.mycomponent = this.component
-            
-            
+            this.$mapState().editor.component = this.component
             return true
         },
         

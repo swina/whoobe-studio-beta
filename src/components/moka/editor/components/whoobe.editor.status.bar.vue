@@ -82,7 +82,8 @@ export default {
             return this.$mapState().editor.component.json
         },
         component(){
-            return this.$mapState().editor.component.json
+            this.$mapState().editor.component = this.$attrs.component 
+            return this.$attrs.component //this.$mapState().editor.component.json
         },
         editor(){
             return this.$mapState().editor

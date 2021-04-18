@@ -29,7 +29,7 @@ const __components = {
         component_preview: {
             title: 'Preview',
             size: 'fullscreen',
-            position: '',
+            position: 'modal',
             component: 'moka/editor/preview/whoobe.preview'
         },
         component_preview_html:{
@@ -47,7 +47,7 @@ const __components = {
         block_menu : {
             title: 'Menu Edit',
             size: 'fullscreen',
-            position: '',
+            position: 'mt-10 mb-10',
             component: 'moka/editor/components/whoobe.editor.menus'
         },
         edit_css : {
@@ -108,8 +108,8 @@ const __components = {
         media_edit : {
             title: 'Media Info',
             component: 'media/media.edit',
-            size: 'md',
-            position: 'modal-top-right'
+            size: 'full',
+            position: ''
         },
         media_from_url :{
             title: 'Media from URL',
@@ -146,6 +146,7 @@ const __components = {
         },
         editslides: {
             size: 'lg',
+            position: 'modal',
             title: 'Slider Editor',
             component: 'editor/render/moka.editor.slides'
         },
@@ -165,28 +166,31 @@ const __components = {
             size: 'sm',
             title: 'Form settings',
             component: 'editor/settings/moka.editor.form.settings',
-            position: '',
-            height: ''
+            position: 'modal',
         },
         loopcontrol: {
             size: 'sm',
+            position: 'modal',
             title: 'Collection loop settings',
             component: 'editor/settings/moka.editor.loop.settings'
         },
         pluginsetting: {
             size: 'md',
+            position: 'modal',
             title: 'Plugin settings',
             component: 'editor/settings/moka.editor.plugin.settings'
         },
         popupsettings: {
             size: 'md',
+            position: 'modal',
             title: 'Modal/Popup settings',
             component: 'editor/settings/moka.editor.popup.settings',
         },
         slidersettings: {
             size: 'md',
             title: 'Slider settings',
-            component: 'editor/settings/moka.editor.slider.settings'
+            position: 'modal',
+            component: 'editor/render/moka.editor.slider'
         },
         tree: {
             size: 'sm', 
@@ -196,16 +200,19 @@ const __components = {
         },
         app_generate: {
             size: 'md',
+            position: 'modal',
             title: 'Website Generator',
             component: 'settings/whoobe.settings.build'
         },
         whoobe_templates: {
             size:'lg',
+            position: 'modal',
             title: 'Select a template',
             component: 'articles/moka.articles.templates'
         },
         whoobe_product: {
             size: 'lg',
+            position: 'modal',
             title: 'Edit product',
             component: 'shop/products/products.edit'
         }

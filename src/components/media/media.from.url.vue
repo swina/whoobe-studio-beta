@@ -1,5 +1,5 @@
 <template>
-    <div class="h-3/5">
+    <div class="h-4/5">
         <img :src="imageURL" class="w-full h-3/5 object-cover object-top"
             />
             <!-- <div v-if="editor.current && editor.current.image" class="text-xs">
@@ -9,9 +9,10 @@
                 editor.current.image.ext
               }}</span>
             </div> -->
-        <button class="rounded-full success" v-if="editor.current && editor.current.hasOwnProperty('image')" @click="setImage(imageURL)">
-            OK
-        </button>
+        <div class="w-full absolute bottom-0 py-8 bg-gray-100 flex flex-row justify-around items-center">
+            <button class="success" v-if="editor.current && editor.current.hasOwnProperty('image')" @click="setImage(imageURL)">OK</button>
+            <button class="warning" v-if="editor.current && editor.current.hasOwnProperty('image')" @click="imageEditor">Image Editor</button>
+        </div>
     </div>
 </template>
 
@@ -32,6 +33,9 @@ export default {
                 url : image
             }
             this.$action()
+        },
+        imageEditor(){
+            this.$action('filerobot')
         }
     }
 }

@@ -17,7 +17,7 @@
         </div>
         <moka-modal
             size="lg"
-            position=""
+            position="modal"
             v-if="pluginSettings"
             @close="pluginSettings=!pluginSettings"
             @click_0="pluginSettings=!pluginSettings"

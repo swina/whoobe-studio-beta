@@ -35,7 +35,7 @@
         </div>
         <div v-if="bodySettings">
             <label class="font-bold">Font</label>
-            <select class="w-full" v-model="fontFamily">
+            <select class="w-full" v-model="editor.component.json.fontFamily">
                 <option value="">default</option>
                 <option value="Arial">sans</option>
                 <option value="serif">serif</option>

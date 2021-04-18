@@ -1,7 +1,6 @@
 <template> 
     <div :key="refreshID" :ref="doc.id" :class="pageCss(doc.css) + ' m-auto overflow-x-hidden '" :style="stile(doc,true) + ' ' + background(doc)" id="content">
         <!-- 1st level - BLOCKS LOOP -->
-        
             <template v-for="(block,b) in doc.blocks">
                 <div videobg v-if="block.image && (block.image.ext==='.mp4' || block.image.ext==='webm' || block.image.url.indexOf('.mp4') > -1)" :class="'absolute ' + block.css.css">  
                     <video playsinline :poster="block.image.previewUrl" class="object-cover h-full w-full" autoplay loop>
@@ -142,6 +141,7 @@ export default {
         stile(block){
             let stl = ''
             if ( block.hasOwnProperty('fontFamily') ){
+                document.body.style.fontFamily = block.fontFamily
                 stl += 'font-family:"' + block.fontFamily + '"'
             }
             stl += block.hasOwnProperty('style') ? block.style : ''

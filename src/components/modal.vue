@@ -1,28 +1,31 @@
 <template>
-    <div ref="draggableContainer" id="draggable-container" :class="'bg-white z-highest max-h-screen max-w-screen shadow-lg rounded text-sm overflow-hidden ' + size + height + ' ' + position"  style="resize:both;">
-        
-        <div class="absolute z-highest top-0 right-0 h-8 px-2 flex flex-row items-center text-gray-400 text-xls" >
-            <i class="material-icons" @click="$emit('close')">close</i>
-        </div>
-        <div id="draggable-header"  class="cursor-move w-full bg-gray-800 text-white  rounded-tl  rounded-tr px-2 py-1"  @mousedown="dragMouseDown">
-            <slot name="title"></slot>
-        </div>
+    <div>
+        <div v-if="$attrs.exclusive" class="fixed top-0 left-0 bg-gray-800 bg-opacity-75 z-1 h-screen w-screen"></div>
+        <div ref="draggableContainer" id="draggable-container" :class="'bg-white z-highest max-h-screen max-w-screen shadow-lg rounded text-sm overflow-hidden ' + size + height + ' ' + position"  style="resize:both;">
             
-        <div class="text-sm h-full">
-            <slot name="content"></slot>
-            <slot name="footer"></slot>
-        </div>
-        
-        <div class="px-4 p-1">
-            <slot name="confirm">{{ confirmMsg }}</slot>
-        </div>
-        
-        <div v-if="buttons != 'none'" :class="'w-full p-4 bg-gray-200 items-center justify-center p-2 grid grid-cols-' + btns[buttons].length">
-            <template v-for="(button,i) in btns[buttons]">
-                <button :class="button.class + ' m-auto'" @click="action(i)">
-                    {{ button.label }}
-                </button>
-            </template>
+            <div class="absolute z-highest top-0 right-0 h-8 px-2 flex flex-row items-center text-gray-400 text-xls" >
+                <i class="material-icons" @click="$emit('close')">close</i>
+            </div>
+            <div id="z-2 draggable-header"  class="cursor-move w-full bg-gray-800 text-white  rounded-tl  rounded-tr px-2 py-1"  @mousedown="dragMouseDown">
+                <slot name="title"></slot>
+            </div>
+                
+            <div class="z-highest text-sm h-full">
+                <slot name="content"></slot>
+                <slot name="footer"></slot>
+            </div>
+            
+            <div class="z-highest px-4 p-1">
+                <slot name="confirm">{{ confirmMsg }}</slot>
+            </div>
+            
+            <div v-if="buttons != 'none'" :class="'z-highest w-full p-4 bg-gray-200 items-center justify-center p-2 grid grid-cols-' + btns[buttons].length">
+                <template v-for="(button,i) in btns[buttons]">
+                    <button :class="button.class + ' m-auto'" @click="action(i)">
+                        {{ button.label }}
+                    </button>
+                </template>
+            </div>
         </div>
     </div>
 </template>
@@ -81,7 +84,7 @@ export default {
                                         'w-full md:w-1/4 lg:w-1/5' :
                                             this.$attrs.size === 'lg' ? 
                                                 'w-full md:w-3/4 lg:w-2/3' : 
-                                                    this.$attrs.size === 'full' ? 
+                                                    this.$attrs.size === 'full' || this.$attrs.size === 'fullscreen' ? 
                                                         'fixed w-screen h-screen top-0 left-0' :
                                                             'w-full md:w-1/3 lg:w-1/3'
         },
@@ -90,7 +93,7 @@ export default {
                     ' h-' + this.$attrs.height : ''
         },
         position(){
-           return this.$attrs.position ? this.$attrs.position : 'modal'
+           return this.$attrs.position ? this.$attrs.position : ''
         },
         confirm(){
             return this.$attrs.confirm ? true : false

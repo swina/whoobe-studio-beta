@@ -85,7 +85,7 @@ import gsapEffects from '@/plugins/animations'
 import { mapState } from 'vuex'
 
 export default {
-    name: 'MokaPreview',
+    name: 'WhoobePreview',
     data:()=>({
         printScreen: null,
         refreshID: null,
@@ -148,6 +148,7 @@ export default {
                 stl += 'font-family:"' + block.fontFamily + '"'
             }
             stl += block.hasOwnProperty('style') ? block.style : ''
+            console.log ( stl )
             return stl
         },
         background(block){

@@ -42,11 +42,11 @@
         </div>
         
     </div> 
-    <whoobe-status-bar/>
+    <whoobe-status-bar :component="component"/>
 
     <!-- context menu -->
-    <div class="editor-context-menu" ref="contextMenu" id="contextMenu" style="left:-1000px" @mouseleave="hideContextMenu">
-        <component :is="contextMenuComponent" @delete="confirmModal=!confirmModal" :current="current" :component="component" :id="$randomID()" :key="$randomID()"/>
+    <div class="editor-context-menu" ref="contextMenu" id="contextMenu" style="left:-1000px" @mouseleave="hideContextMenu" @click="hideContextMenu">
+        <component :is="contextMenuComponent" @delete="confirmModal=!confirmModal" :current="current" :component="component" :id="$randomID()" :key="$randomID()" @click="hideContextMenu"/>
     </div>
     <!--- ELEMENTS EDITOR -->
 
@@ -427,6 +427,7 @@ export default {
             if ( block.hasOwnProperty('fontFamily')){
                 stile += 'font-family:\"' + block.fontFamily + '\"; '
             }
+            console.log ( stile )
             return block.hasOwnProperty('style') ? block.style + stile : stile
         },
         background(block){
@@ -462,7 +463,6 @@ export default {
             this.$refs.contextMenu.style.left = "-1000px"
         },
         showContext(e){
-            console.log ( e.clientY , e.clientX , window.innerWidth )
             e.preventDefault()
             if ( e.clientX < (window.innerWidth - 300) ) {
                  this.$refs.contextMenu.style.left = (e.clientX - 20) + 'px'
@@ -473,7 +473,7 @@ export default {
                     this.$refs.contextMenu.style.left = ( e.clientX - 300 - 20) + 'px'
                 }
             }
-            if ( e.clientY < 150 ){
+            if ( e.clientY < 250 ){
                 this.$refs.contextMenu.style.top = '20px'    
             } else {
                 this.$refs.contextMenu.style.top = (window.pageYOffset + e.clientY-200) + 'px'

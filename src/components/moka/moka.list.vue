@@ -346,7 +346,6 @@ export default {
             component.name = comp.name + ' COPY'
             this.$api.service ( 'components' ).create ( component ).then ( result => {
             //this.$http.post ( 'components' , component ).then ( result => {
-                this.objects.unshift ( result )
                 this.$message('Blocks copied')
                 this.loading = false
             }).catch ( error => {

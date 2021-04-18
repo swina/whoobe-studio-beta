@@ -96,7 +96,7 @@ export default {
         },
     },
     mounted(){
-        
+        this.$mapState().editor.component = this.$attrs.blocks
         //this.$store.getters.component
         //if ( process.env.NODE_ENV === 'development' ){
         //    this.$http.defaults.headers.common = {
