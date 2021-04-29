@@ -45,7 +45,7 @@ export default {
     data:()=>({
         search: '',
         images: null,
-        apikey: '1530072-dfa23d1f40b3b1f008ba82741',
+        apikey: '',
         page: 0,
         preview: null,
         index: null,
