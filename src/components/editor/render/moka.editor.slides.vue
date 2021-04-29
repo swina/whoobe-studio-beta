@@ -32,9 +32,21 @@
         
         
 
-        <div :class="doc.css + ' relative border-2 border-dashed p-4 text-black '" :style="stile(doc,true) + ' ' + background(doc)" id="content">
+        <div :class="doc.css + ' absolute border-2 border-dashed p-4 text-black '" :style="stile(doc,true) + ' ' + background(doc)" id="content">
             <template v-for="(block,i) in doc.blocks">
-                <moka-single-container
+                <!-- <moka-single-container
+                    v-if="slideIndex===i"
+                    :key="block.id" 
+                    :doc="block"
+                    :component="doc" 
+                    level="0"
+                    index="0"
+                    :slide="true"
+                    :top="true" 
+                    :pos="[0,0]"
+                    :coords="[0,0]" 
+                    zi="1"/> -->
+                <moka-container
                     v-if="slideIndex===i"
                     :key="block.id" 
                     :doc="block"
@@ -58,7 +70,11 @@ import draggable from 'vuedraggable'
 import { mapState } from 'vuex'
 export default {
     name: 'MokaEditorSlides',
-    components: { MokaSingleContainer , draggable },
+    components: { 
+        MokaSingleContainer , 
+        draggable ,
+        MokaContainer: ()=>import('@/components/editor/render/moka.editor.container')
+    },
     props: [ 'doc' ],
     data:()=>({
         sliderTools: false, 

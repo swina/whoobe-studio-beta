@@ -1,10 +1,10 @@
 <template>
-    <div class="grid grid-cols-1 h-full gap-1 bg-gray-200 rounded" v-if="image">
+    <div class="grid grid-cols-2 h-4/5 gap-1 bg-gray-200 rounded" v-if="image">
         <div class="fixed z-highest top-0 left-0 right-0 bottom-0 w-screen h-screen bg-cover bg-no-repeat bg-center" v-if="fullscreen" :style="'transition:all .5s linear;background-image:url(' +
             $imageURL(image) + ')'" @click="fullscreen=!fullscreen">
         </div>
         <transition name="fade">
-            <div v-if="!fullscreen" :class="'flex cursor-pointer flex-col z-highest items-center justify-center p-1 bg-black bg-no-repeat bg-center relative bg-contain ' + isfullscreen"  :style="'transition:all .5s linear;background-image:url(' +
+            <div v-if="!fullscreen" :class="'flex cursor-pointer flex-col z-highest items-center h-full justify-center p-1 bg-no-repeat bg-center relative bg-contain ' + isfullscreen"  :style="'transition:all .5s linear;background-image:url(' +
             $imageURL(image) + ')'" @click="fullscreen=!fullscreen">
                 <!-- <ima :src="$imageURL(image)" class="flex h-1/3 w-full  object-cover object-top"/> -->
                 <i v-if="image.mime.indexOf('image') < 0" class="material-icons text-gray-400 m-auto text-10xl">insert_drive_file</i>
@@ -12,16 +12,19 @@
                 <i v-if="fullscreen" class="material-icons fixed z-2xtop top-0 right-0 text-5xl text-white">close</i>
             </div>  
         </transition>
-        <div class="h-1/2 flex flex-col p-2" v-if="image && !fullscreen">
-            <div class="text-xs px-1 bg-gray-300 rounded-full -mt-2">{{ image.width }} x {{ image.height }} - {{parseInt(image.size/1000)}}KB</div>
+        <div class="relative overflow-x-hidden flex flex-col justify-start p-2" v-if="image && !fullscreen">
             <!--<div class="text-right text-xs text-gray-500"># {{ image._id }}</div>-->
             <label>File</label>
             <input class="w-full" type="text" readonly :value="image.name"/>
-            <label>Caption</label>
+            <label class="mt-4">Dim</label>
+            <div class="flex text-base pl-2 py-1">
+                <div>{{image.width}}</div>x<div>{{image.height}}px - {{parseInt(image.size/1000)}}KB</div>
+            </div>
+            <label class="mt-4">Caption</label>
             <input class="w-full" type="text" v-model="image.caption"/>
-            <label>Alternative text</label>
+            <label class="mt-4">Alternative text</label>
             <input class="w-full" type="text" v-model="image.alternativeText"/>
-            <label>URL</label>
+            <label class="mt-4">URL</label>
             <input class="w-full" type="text" readonly v-model="image.url"/>
             <div class="w-full text-right mt-4">
                 <button class="danger mr-2 rounded-full" @click="removeImage(image._id)">Delete</button>
@@ -49,7 +52,7 @@ export default {
             if ( this.fullscreen ){
                 return 'fixed top-0 right-0 bg-cover w-screen h-screen'
             } else {
-                return 'relative bg-contain w-full h-1/2'
+                return 'relative bg-contain w-full'
             }
         },
         image(){

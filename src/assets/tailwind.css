@@ -1,5 +1,7 @@
 @tailwind base;
 
+@import '/custom.css';
+
 @tailwind components;
 
 body {
@@ -118,9 +120,9 @@ label {
 }
 
 input , input[type=number] , textarea , select {
-    @apply p-1 bg-gray-300 text-sm py-1 pl-1 mb-1;
+    @apply p-1 bg-gray-300 text-sm py-1 pl-1 mb-1 text-xs;
     width: fit-content;
-    font-family: monospace;
+    font-family: sans-serif;
     line-height:1rem;
 }
 
@@ -243,7 +245,7 @@ pre {
 }
 
 .whoobe-fullscreen-gallery {
-  @apply z-0 absolute top-0 left-0 right-0 bottom-0 w-screen h-screen;
+  @apply absolute top-0 left-0 right-0 bottom-0 w-screen h-screen;
 }
 
 .modal {
@@ -872,6 +874,8 @@ DESKTOP classes
   .grayscale {
     filter: grayscale(1)
   }
+
+  
  
   @variants responsive {
     .perspective-rotate3dY {
@@ -888,6 +892,25 @@ DESKTOP classes
       transform:perspective(80vw) rotateX(-45deg);
     }
 
+    .blur-1 {
+      backdrop-filter: blur(1px);
+    }
+  
+    .blur-2 {
+      backdrop-filter: blur(2px);
+    }
+  
+    .blur-3 {
+      backdrop-filter: blur(3px);
+    }
+  
+    .blur-4 {
+      backdrop-filter: blur(4px);
+    }
+  
+    .blur-5 {
+      backdrop-filter: blur(5px);
+    }
 
 
   }

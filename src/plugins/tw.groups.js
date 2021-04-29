@@ -68,10 +68,22 @@ const twgroups = [
         { name: 'MokaTextFont' , attr: 'textfont' },
     ]},
     { label: 'background' , components: [ 
-        { name: 'MokaBgcolor' , attr: 'bgcolor'},
+        { name: 'MokaColor' , attr: 'bgcolor'},
         { name: 'MokaRange' , attr: 'bgOpacity' , title: 'opacity' },
         { name: 'MokaBgPosition' , attr: 'bgposition' },
-        { name: 'MokaGradient' , attr: 'gradient' },
+        { name: 'MokaOptions' , attr: 'blur' , title: 'filter blur' }
+        // { name: 'MokaBgGradient' , attr: 'from' , title: 'gradient from' , css: 'float-left'},
+        // { name: 'MokaBgGradient' , attr: 'via' , title: 'gradient via' , css: 'float-left'},
+        // { name: 'MokaBgGradient' , attr: 'to' , title: 'gradient to' },
+        // { name: 'MokaOptions' , attr: 'gradient' , title: 'direction' },
+        //{ name: 'MokaBgcolor' , attr: 'to' , title: 'gradient to'},
+        //{ name: 'MokaBgcolor' , attr: 'via' , title: 'gradient via'},
+    ]},
+    { label: 'gradient' , components: [ 
+        { name: 'MokaBgGradient' , attr: 'from' , title: 'gradient from' , css: 'float-left' , group: true },
+        { name: 'MokaBgGradient' , attr: 'via' , title: 'gradient via' , css: 'float-left' , group: true },
+        { name: 'MokaBgGradient' , attr: 'to' , title: 'gradient to' , css: 'float-left' , group: true },
+        { name: 'MokaOptions' , attr: 'gradient' , title: 'direction' , css: 'flex w-full' , group: true },
     ]},
     { label: 'padding', components : [ 
         { name: 'MokaRange' , attr: 'padding' , title: 'all'},

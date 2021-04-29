@@ -48,7 +48,7 @@ title="Save document">save</i>
 
             <span v-else>CONTAINER <i class="material-icons text-sm mx-1">select_all</i></span>
 
-            <span class="capitalize ml-2">CSS class</span>
+            <span class="capitalize ml-2 cursor-pointer" title="Edit CSS/Style" @click="$action('edit_css')">CSS class</span>
             
             <input v-if="editor.current && !editor.current.css.hasOwnProperty('css')" type="text" class="ml-2 w-3/5 border-0 text-white rounded-none bg-gray-600" v-model="editor.current.css"/>
             

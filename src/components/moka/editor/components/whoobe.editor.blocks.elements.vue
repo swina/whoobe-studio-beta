@@ -6,7 +6,7 @@
             <!--<i v-if="!$attrs.importReusable" class="material-icons z-top absolute right-0 m-2 cursor-pointer text-gray-500" @click="$emit('close')">close</i>-->
             <template v-if="schema && schema.keys && !$attrs.importReusable"  v-for="(group,g) in schema.keys">
                 
-                <div class="p-1 border-b border-gray-700 capitalize" v-if="!$attrs.newblock||group==='container'" :key="group" @click="currentGroup=group">
+                <div class="p-1 border-b border-gray-700 capitalize hover:bg-gray-600" v-if="!$attrs.newblock||group==='container'" :key="group" @click="currentGroup=group">
                     {{ group }}
                 </div>
                 <div v-if="currentGroup===group" class="w-full border-b border-gray-700 bg-gray-700 flex flex-row flex-wrap p-1 justify-center" :key="group + '_' + g">
@@ -29,6 +29,7 @@
                 </div>
             </transition>
             <transition name="fade">
+                
                 <div class="nuxpresso-modal text-xs p-4 z-50 w-1/3 border" v-if="grids">
                     <i class="material-icons absolute right-0 top-0" @click="grids=!grids">close</i>
                     <moka-grids @grid="addGrid" :element="selected" :loop="isloop"/>
@@ -543,7 +544,8 @@ export default {
             }*/
             if ( obj.element === 'flex-row' || obj.element === 'grid' ){
                 component.label === 'Articles Grid' || component.hasOwnProperty('collection') ? this.isloop = true : this.isloop = false
-                this.grids = true
+                //this.grids = true
+                this.$action('grids')
                 return
             } 
             if ( obj.tag === 'icon' && obj.type === 'icon' ) {

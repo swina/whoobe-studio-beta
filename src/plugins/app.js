@@ -13,7 +13,7 @@
 const menu = {
     items : [
         { label: 'Home' , icon: 'home' , component: 'MokaHome' , path: 'Home' , filter: '' },
-        { label: 'Blocks' , icon: 'widgets' , component: 'MokaList' , path: '' , filter: '' , 
+        { label: 'Blocks' , icon: 'widgets' , component: 'MokaList' , path: '' ,  filter: '' , 
             function : 'components_categories'
             // [
             //     { label: 'Pages' , icon: '' , component: 'MokaList' , path: 'moka/moka.list' , filter: 'page' },

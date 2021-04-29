@@ -3,6 +3,8 @@ module.exports = {
     // removeDeprecatedGapUtilities: true,
     // purgeLayersByDefault: true,
   },
+
+  mode: 'jit',
   purge: [],
   theme: {
     fontFamily: {
@@ -106,7 +108,9 @@ module.exports = {
           'half'  : '50%',
           'large' : '60%',
           'wide'  : '75%',
-          'extrawide' : '85%'
+          'superwide' : '85%',
+          'extrawide' : '90%',
+          '2xwide' : '95%'
         },
         height: {
           '1/5': '20vh',
@@ -118,7 +122,9 @@ module.exports = {
           '3/5': '60vh',
           '3/4': '75vh',
           '4/5': '80vh',
-          '1/12' : '12vh'
+          '85' : '85vh',
+          '90' : '90vh',
+          '95' : '95vh'
         },
         scale: {
           '101': '1.01',

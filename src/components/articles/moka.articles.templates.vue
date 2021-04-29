@@ -36,12 +36,20 @@ export default {
     }),
     computed: {
         loadTemplates(){
-            this.templates = this.$mapState().datastore.dataset.components.filter ( templ => {
-                return templ.category === this.filter
+            this.$api.service('components').find ( { query : {
+                category : this.filter,
+                $skip:0,
+                $limit:200
+            }}).then ( result => {
+                this.templates = result.data
             })
+            // this.templates = this.$mapState().datastore.dataset.components.filter ( templ => {
+            //     return templ.category === this.filter
+            // })
             return true
         }
     },
+    /*
     watch:{
         filter(v){
             this.templates = this.$mapState().datastore.dataset.components.filter ( templ => {
@@ -49,6 +57,7 @@ export default {
             })
         }
     },
+    */
     methods: {
         background(template){
             let image = ''
@@ -78,9 +87,11 @@ export default {
                 this.$mapState().datastore.currentArticle.blocks = result
                 this.$mapState().datastore.currentArticle.component = result._id
                 this.$mapState().datastore.currentArticle.template_id = result._id 
+                this.$mapState().datastore.currentArticle.template_preview = result.image 
                 this.$mapState().datastore.dataset.articles.map ( arts => {
                     if ( arts._id === this.$mapState().datastore.currentArticle._id ){
                         arts.template_id = this.$mapState().datastore.currentArticle.template_id
+                        arts.template_preview = result.image
                     }
                 })
                 this.$action()

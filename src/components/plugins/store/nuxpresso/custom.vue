@@ -6,7 +6,7 @@
             <i class="material-icons">shopping_bag</i>
             <span class="snipcart-total-price"></span>  
         </div>
-        <div v-if="!apikey" class="text-center w-full border-4 bg-gray-300 text-lg text-red-500">Invalid License Key</div>
+        <!-- <div v-if="!apikey" class="text-center w-full border-4 bg-gray-300 text-lg text-red-500">Invalid License Key</div> -->
         <h3 id="storeTop">Store</h3>
         <p>{{ lang.products }} {{total}}</p>
         <div class="w-full text-center cursor-pointer">
@@ -47,6 +47,7 @@
             <moka-modal
                 v-if="current && current.name"
                 size="lg"
+                position="modal"
                 buttons="none"
                 @close="current=!null">
                 <div slot="title">{{ current.name }}</div>

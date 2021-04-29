@@ -44,21 +44,23 @@
                 v-if="create"
                 buttons="save"
                 :close="true"
+                position="modal"
                 @click_0="create=!create"
                 @click_1="saveNewComponent"
                 @close="create=!create">
                 <div slot="title">Create new block</div>
-                <div slot="content">
+                <div slot="content" class="p-2">
                     <label>Name*</label>
                     <input class="w-full" type="text" v-model="newComponent.name"/>
                     <label>Category</label>
                     <select class="w-full" v-model="newComponent.category">
-                        <option value="component">component</option>
+                        <option v-for="category in $mapState().datastore.dataset.setup[0].categories.components" :value="category">{{ category }}</option>
+                        <!-- <option value="component">component</option>
                         <option value="widget">widget</option>
                         <option value="template">template</option>
                         <option value="page">page</option>
                         <option value="slider">slider</option>
-                        <option value="gallery">gallery</option> 
+                        <option value="gallery">gallery</option>  -->
                     </select>
                     <label>Description</label>
                     <textarea class="w-full" v-model="newComponent.description"/>
@@ -207,9 +209,9 @@ export default {
         exportComponent: false,
         exportLibrary: false,
         newComponent: {
-            category:'component',
+            category: 'component',
             name: 'New component',
-            description: 'A new Moka component'
+            description: 'A new blocks component'
         },
         allObjects: null,
         doc: null,
@@ -251,11 +253,11 @@ export default {
             }
         }
     },*/
-    beforeMount(){ 
+    mounted(){ 
         /*this.$api.service('components').find({ query: { category: this.filter , $limit: this.limit , $skip: this.skip , $sort : {updatedAt:-1}}}).then ( result => {
             this.objects = result.data
         })*/
-       
+        this.newComponent.category = this.filter
     },
     computed:{
         ...mapState ( ['moka','user','datastore','desktop'] ),
@@ -306,6 +308,7 @@ export default {
             })
         },
         setComponent(component){
+            console.log ( component )
             this.$store.dispatch('setComponent',component)
             this.$store.dispatch ( 'loadComponent' , component )
             this.$store.dispatch ( 'loadMedia' )
@@ -315,6 +318,7 @@ export default {
                 component: () => import ( '@/components/moka/moka'),
                 blocks: component,
                 icon: 'edit',
+                mode: 'block',
                 filter: '',
                 ref: this.$randomID(),
                 resumeAction: null
@@ -386,16 +390,18 @@ export default {
                     "css":""
                     }
                 } : null
-            this.$http.post ( 'components' , component ).then ( result => {
-                this.$store.dispatch('loadComponents')
-                this.$store.dispatch('message','New component saved')
-                
-                this.loading = false
-            }).catch ( error => {
-                this.$store.dispatch('message','An error occured. Check you console log.')
-                console.log ( error )
-                this.loading = false
-            })
+            
+            this.$store.dispatch ( 'setComponent' , component )
+            this.$api.service ( 'components' ).create ( component )
+            // this.$http.post ( 'components' , component ).then ( result => {
+            //     this.$store.dispatch('loadComponents')
+            //     this.$store.dispatch('message','New component saved')
+            //     this.loading = false
+            // }).catch ( error => {
+            //     this.$store.dispatch('message','An error occured. Check you console log.')
+            //     console.log ( error )
+            //     this.loading = false
+            // })
             return null
         },
         remove(id,index){

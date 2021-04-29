@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex flex-col text-xs p-4">
+    <div class="w-full flex flex-col text-xs p-4 z-highest">
         <button v-if="grid" @click="grid=null" class="items-center flex flex-row px-4"><i class="material-icons">chevron_left</i> Grids</button>
         Click on a template to select a grid 
         <template v-for="min in max">
@@ -43,7 +43,8 @@
                         <textarea class="w-1/2 h-32" style="font-family:monospace" :value="container" />
                     </div>
                 </div>-->
-                <button class="m-auto w-24" v-if="selected" @click="$emit('grid',obj)">Add Grid</button>
+                <!-- <button class="m-auto w-24" v-if="selected" @click="$emit('grid',obj)">Add Grid</button> -->
+                <button class="m-auto w-24" v-if="selected" @click="addGrid(obj)">Add Grid</button>
         </div>
     </div>
 </template>
@@ -68,7 +69,7 @@ export default {
         obj: null
     }),
     computed:{
-        ...mapState(['moka','datastore']),
+        ...mapState(['moka','datastore','editor']),
         schema(){
             return this.datastore.dataset.elements[0].moka //this.moka.elements.moka
         },
@@ -115,6 +116,11 @@ export default {
                 }
                 this.obj = obj
             }
+        }
+    },
+    methods:{
+        addGrid(obj){
+            this.editor.current.blocks.push ( obj )
         }
     }
 }

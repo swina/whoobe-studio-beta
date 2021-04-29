@@ -11,16 +11,16 @@ const socket = io(  window.localStorage.getItem('moka-strapiurl') , //'http://lo
   }
 )
 
-const socketWhoobe = io('http://localhost:3031' ,
-   {
-     transports: ['websocket'],
-     polling: {
-       extraHeaders: {
-         Authorization: 'Basic000002121212121212222'
-       }
-     }
-   }
-)
+// const socketWhoobe = io('http://localhost:3031' ,
+//    {
+//      transports: ['websocket'],
+//      polling: {
+//        extraHeaders: {
+//          Authorization: 'Basic000002121212121212222'
+//        }
+//      }
+//    }
+// )
 
 
 
@@ -30,9 +30,9 @@ const api = feathers()
   }))
   //.configure(auth({ storage: window.localStorage }))
 
-const whoobeApi = feathers()
-   .configure(socketio(socketWhoobe,{timeout:20000}))
-   .configure(auth({ storage: window.localStorage }))
+// const whoobeApi = feathers()
+//    .configure(socketio(socketWhoobe,{timeout:20000}))
+//    .configure(auth({ storage: window.localStorage }))
 
 
 
@@ -43,7 +43,7 @@ export default {
   install: function (Vue) {
 
     Vue.prototype.$api = api
-    Vue.prototype.$apiwhoobe = whoobeApi
+    // Vue.prototype.$apiwhoobe = whoobeApi
 
     Vue.prototype.$datastore = ( name = '' ) =>{
       if ( !name ) return
@@ -84,11 +84,41 @@ export default {
         })
     }
 
+    Vue.prototype.$components = () => {
+      api.service('components').find ( 
+        { 
+          query : 
+          {
+            $limit : 100,
+            $skip: 0,
+            $select : ['_id', 'name' , 'category' , 'image' , 'image_uri' , 'blocks_id' ] 
+          }
+        }
+      ).then ( result => {
+        store.dispatch ( 'dataset' , { table: 'components' , data: result.data })
+      })
+    }
+
     Vue.prototype.$saveComponent = ( component )=> {
       if ( !component ) return null
       return new Promise ( (resolve) => {
         api.service('components').patch ( component._id , component ).then ( res => {
           resolve ( res )
+        }).then ( () => {
+          api.service('articles').find ( {
+            query : {
+              template_id : component._id
+            }
+          }).then ( articles => {
+            
+            articles.data.forEach ( article => {
+              api.service('articles').patch ( article._id , {
+                blocks: component
+              }).then ( resp => {
+                console.log ( 'Updated ' + resp.title )
+              })
+            })
+          })
         }).catch ( error => {
           resolve ( error )
         })

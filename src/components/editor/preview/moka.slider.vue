@@ -3,7 +3,7 @@
         :id="doc && doc.hasOwnProperty('anchor')? doc.anchor : doc.id"
         v-if="doc && doc.blocks.length" 
         :key="doc.id"
-        :class="'content max-w-screen overflow-x-hidden relative flex flex-no-wrap block ' + classe(doc.css)" :style="doc.style + ' ' +  background(doc)" :ref="doc.id">
+        :class="'content-slider max-w-screen overflow-x-hidden flex flex-no-wrap block ' + classe(doc.css)" :style="doc.style + ' ' +  background(doc)" :ref="doc.id">
         
             <template v-for="(block,i) in doc.blocks">
                   <moka-preview-container
@@ -12,20 +12,20 @@
                   :doc="block" :key="block.id" @action="hasSlideAction" :current="current"/>
             </template>
             
-            <div class="fixed bottom-0 right-0 z-top p-4 bg-black bg-opacity-50 opacity-0 hover:opacity-100">
+            <!-- <div class="fixed bottom-0 right-0 z-top p-4 bg-black bg-opacity-50 opacity-0 hover:opacity-100">
               <i class="material-icons nuxpresso-icon-circle mr-2" @click="$emit('save')">save</i>
               <i class="material-icons nuxpresso-icon-circle" @click="$emit('close')">close</i>
-            </div>
+            </div> -->
             
             <div v-if="doc.slider.dots.enable" class="md:absolute bottom-0 left-0 text-center flex-row justify-center items-center p-1 w-full">
               <i :class="'material-icons mr-2 ' + dotActive(n)" :key="'dot-' + doc.id + n" v-for="n in doc.blocks.length" @click="goTo(n-1)">fiber_manual_record</i>
             </div>
 
             <div v-if="doc.slider.navigation.enable">
-              <div :class="'absolute top-0 left-0 h-full flex justify-center items-center p-1 ' + over" @click="goTo(index-1)" v-if="index > 0">
+              <div :class="'absolute top-0 left-0 h-full flex justify-center p-1 ' + over + position" @click="goTo(index-1)" v-if="index > 0">
                 <i :class="'slider-navigation-icon material-icons text-4xl ' + doc.slider.navigation.css">{{ doc.slider.navigation.icons[0]}}</i>
               </div>
-              <div :class="'absolute top-0 right-0 h-full flex justify-center items-center p-1 ' + over" @click="goTo(index+1)" v-if="index < doc.blocks.length-1">
+              <div :class="'absolute top-0 right-0 h-full flex justify-center p-1 ' + over + position " @click="goTo(index+1)" v-if="index < doc.blocks.length-1">
                 <i :class="'slider-navigation-icon material-icons text-4xl ' + doc.slider.navigation.css">{{ doc.slider.navigation.icons[1]}}</i>
               </div>
             </div>
@@ -68,6 +68,10 @@ export default {
         },
         over(){
           return this.doc.slider.navigation.hover ? 'opacity-0 hover:opacity-100' : ''
+        },
+        position(){
+            return this.doc.slider.navigation.hasOwnProperty('position') && this.doc.slider.navigation.position ?
+                      ' ' + this.doc.slider.navigation.position : ' items-center'
         },
         buttonsClass(){
           let css = this.doc.slider.buttons_css ? ' ' + this.doc.slider.buttons_css : ''
@@ -141,8 +145,9 @@ export default {
         },
         background(block){
             if ( !block ) return 
-            return block.hasOwnProperty('image') ?
-              ' background-image:url(' + this.$imageURL(block.image) + ');' : ''
+            return block.hasOwnProperty('image') && block.image ?
+              block.image.url ?
+                ' background-image:url(' + this.$imageURL(block.image) + ');' : '' : ''
                 /*
                 block.image && block.image.url ? 
                     block.image.previewUrl ? 

@@ -1,6 +1,6 @@
 <template>
 <!-- MAIN CONTAINER -->
-<div :class="doc.css + ' relative flex flex-no-wrap'" :style="stile(doc) + ' ' + background(doc)" id="content" :autoplay="autoplay()">
+<div :class="doc.css + ' flex flex-no-wrap'" :style="stile(doc) + ' ' + background(doc)" :id="$randomID()" :autoplay="autoplay()">
     <!-- 1st level - BLOCKS LOOP --> 
     
     <div v-for="(block,b) in doc.blocks" ref="slide" :class="'slide flex-none top-0 left-0 right-0 bottom-0 w-full bg-center bg-cover bg-no-repeat ' + responsive(block.css.css) + ' ' + block.css.container" :style="stile(block) + background(block)" :key="block.id" :ref="block.id">

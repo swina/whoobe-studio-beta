@@ -1,9 +1,9 @@
 <template>
-    <div class="mt-0 cursor-pointer" :data="init">
+    <div class="mt-0 cursor-pointer h-screen text-xs" :data="init">
          <!-- link and anchor -->
-        <div v-if="!$attrs.mode" key="itemLink" class="w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'link' ? 'bg-orange-400 text-white' : ''" @click="toggle('link')">
-                 <span class="text-sm">Link/Anchor</span>
-                 <i class="material-icons absolute right-0 mr-2 text-gray-500">chevron_right</i>
+        <div v-if="!$attrs.mode" key="itemLink" class="text-xs w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'link' ? 'bg-orange-400 text-white' : ''" @click="toggle('link')">
+                <span class="">Link/Anchor</span>
+                <i class="material-icons absolute right-0 mr-2 text-gray-500">chevron_right</i>
         </div>
         <transition name="slideright">
             <div v-if="!$attrs.mode && group==='link'" class="flex flex-col h-full text-gray-500 bg-gray-800 w-full absolute top-0 right-0 z-2xtop">
@@ -35,7 +35,7 @@
 
         <!-- Semantic -->
         <div v-if="!$attrs.mode && editor.current && editor.current.tag != 'document'" key="semantic" class="w-full pl-1 py-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-700 hover:text-white text-gray-500 capitalize flex flex-row relative" :class="group === 'semantic' ? 'bg-orange-400 text-white' : ''" @click="toggle('semantic')">
-                 <span class="text-sm">Semantic</span>
+                 <span class="text-xs">Semantic</span>
                  <i class="material-icons absolute right-0 mr-2 text-gray-400">chevron_right</i>
         </div>
         <transition name="slideright">
@@ -54,14 +54,14 @@
 
         <template v-for="g in groups">
              <div :key="g.attr" class="w-full pl-1 border-b border-gray-700 bg-gray-800 hover:bg-gray-600 hover:text-white text-gray-500 capitalize flex flex-row items-center relative py-1 cursor-pointer" :class="g === group ? 'bg-orange-400 text-white' : ''" @click="toggle(g)">
-                 <span class="text-sm">{{ g.label }}</span>
+                 <span class="text-xs">{{ g.label }}</span>
                  <i class="material-icons absolute right-0 mr-2 text-gray-500" v-if="g!= group">chevron_right</i>
                  <i class="material-icons absolute right-0 mr-2 text-gray-500" v-else>expand_less</i>
              </div>
              <transition name="slideright">
              <div v-if="g === group" class="whoobe-editor-tw-options bg-gray-800 text-gray-500 border-b top-0 absolute w-full z-2xtop left-0 right-0 bottom-0">
                  <div class="bg-orange-400 text-black  flex flex-row p-1 items-center capitalize" @click="group=''"><i class="material-icons absolute right-0">chevron_right</i> {{ g.label }}</div>
-                 <div :key="$randomID()" v-for="component in g.components" class="mb-1 p-1">
+                 <div :key="$randomID()" v-for="component in g.components" class="mb-1 p-1" :class="component.hasOwnProperty('group')? component.css :''">
                      <component 
                         :key="$randomID()"
                         :is="component.name" 
@@ -89,7 +89,8 @@
 </template>
 
 <script>
-import MokaBgcolor from '@/components/editor/tailwind/tailwind.bgcolor'
+import MokaBgcolor from '@/components/editor/tailwind/tailwind.color'
+import MokaBgGradient from '@/components/editor/tailwind/tailwind.bg.gradient'
 import MokaBgPosition from '@/components/editor/tailwind/tailwind.bgposition'
 import MokaBorderColor from '@/components/editor/tailwind/tailwind.border.color'
 import MokaBorderType from '@/components/editor/tailwind/tailwind.border.type'
@@ -111,6 +112,7 @@ export default {
     name: 'WhoobeTailwind',
     components: {
         MokaBgcolor,
+        MokaBgGradient,
         MokaBgPosition,
         MokaBorderColor,
         MokaBorderType,

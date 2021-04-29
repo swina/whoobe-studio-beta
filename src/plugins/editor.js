@@ -228,11 +228,11 @@ export default {
             //let component = store.state.editor.component
             //console.log ( component )
             delete current.parent  
-
+            console.log ( 'ID====>' , current.id )
             var parent = jp.parent ( component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
             let i 
             if ( parent ){
-                console.log ( parent )
+                console.log ( 'parent ====> ' , parent )
                 parent.forEach ( (p,index) => {
                     if ( p.id === current.id ){
                         i = index
@@ -240,10 +240,11 @@ export default {
                 })
                 let el = JSON.parse(JSON.stringify(current))
                 let obj = traverse ( el )
-                console.log ( i , obj )
+                console.log ( 'duplicate => at :' , i , ' object => ', obj )
                 //obj.id = randomID()
                 parent.splice ( i+1 , 0 , obj )
                 store.dispatch('message' , 'Element duplicated')
+                return
             }
         }
         /**

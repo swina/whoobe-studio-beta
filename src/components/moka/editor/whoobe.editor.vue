@@ -626,8 +626,10 @@ export default {
             this.addReusable ( pastedElement )
         },
         //duplicate current element
-        duplicateElement(current){
-            let component = this.$mapState().desktop.tabs[this.$mapState().desktop.currentTab].blocks
+        duplicateElement(component,current){
+            //this.$block_duplicate(component,current)
+
+            //let component = component //this.$mapState().desktop.tabs[this.$mapState().desktop.currentTab].blocks
             var parent = jp.parent ( component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
             let i 
             if ( parent ){

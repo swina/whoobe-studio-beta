@@ -50,7 +50,14 @@
                     </template>
                    
                     <td class="w-20">
-                        <img v-if="templatePreview(article.template_id)" :src="templatePreview(article.template_id)" class="h-16 w-24 object-cover object-top"/>
+                        <span v-if="article.hasOwnProperty('template_preview')">
+                            <img v-if="article.template_preview" :src="$imageURL(article.template_preview)"  class="h-16 w-32 object-cover object-top"/>
+                            <img v-else src="../../assets/no-image.png"/>
+                        </span>
+                        <!-- <span v-if="currentArticle && article._id === currentArticle._id && currentArticle.hasOwnProperty('template_preview')">
+                            <img :src="$imageURL(currentArticle.template_preview)"  class="h-16 w-32 object-cover object-top"/>
+                        </span> -->
+                        <!-- <img v-if="article.hasOwnProperty('template_preview')" :src="this.$imageURL(article.template_preview)"  class="h-16 w-24 object-cover object-top"/> -->
                         
                     </td>
                     <td></td>
@@ -85,54 +92,80 @@
                     </section>
                 
                 
-                    <div class="w-1/5 ml-1 shadow p-2 text-sm bg-gray-200" v-if="currentArticle && editor">
+                    <div class="w-1/5 ml-4 shadow text-sm bg-gray-200" v-if="currentArticle && editor">
                         <!--<button class="warning mr-2" @click="editor=!editor">Close</button>
                         <button class="success mr-2" @click="save">Save</button>    
                         <button @click="wordpress=!wordpress">WP page</button>
                         <button @click="exportPage=!exportPage">Export</button>-->
                         <div class="flex flex-col" v-if="currentArticle.blocks">
-                            <div class="mb-2 flex flex-col">
+                            <div class="bg-gray-500 text-white p-1">Template</div>
+                            <div class="mb-2 flex flex-col items-center bg-white border">
+                                <span class="text-xs" v-if="currentArticle.blocks">
+                                        {{ currentArticle.blocks.name }}
+                                </span>
+                                 
+
+                                <img v-if="currentArticle.template_preview" :src="this.$imageURL(currentArticle.template_preview)" class="w-48 h-32 object-cover object-top cursor-pointer" @click="$action('whoobe_templates')"/>
+                                <img v-else src="../../assets/no-image.png" class="h-24 object-contain"/>
                                 <button class="sm mb-2" @click="$action('whoobe_templates')">Page / Template</button> 
-                                <img v-if="templatePreview(currentArticle.template_id)" :src="templatePreview(currentArticle.template_id)" class="h-24 object-cover object-top cursor-pointer" @click="$action('whoobe_templates')"/>
                                 <!--<img class="h-24 object-cover object-top cursor-pointer" :src="$imageURL(currentArticle.blocks.image_uri)"
                                 v-if="currentArticle.blocks.image_uri" @click="selectTemplate=!selectTemplate"/>-->
                             </div>
                             <div class="mb-2 flex flex-col">
-                                Category
+                                <div class="bg-gray-500 text-white mt-2 p-1">Category</div>
                                 <select class="w-full" v-model="currentArticle.categories">
                                     <option v-for="(category,c) in datastore.dataset.setup[0].categories.articles" :value="category"> {{ category }} </option>
                                 </select>
                             </div>
                         </div>
                             <div>
-                            <input type="checkbox" v-model="currentArticle.homepage"/> Homepage</div>
-                            <div class="flex flex-col mb-2 h-32">
-                                <label>Featured image</label>
-                                <!--<img v-if="currentArticle.featured_image" :src="currentArticle.featured_image"/>
-                            <button v-if="!currentArticle.featurd_image" @click="media=!media,editorImage=false">Featured Image</button>-->
-                                <moka-image-placeholder :image="currentArticle.image" @click="media=!media" size="sm" @media="media=!media,editorImage=false" @noimage="currentArticle.image=null"/>
+                                <div class="bg-gray-500 text-white mt-2 p-1">Homepage</div>
+                                <input type="checkbox" v-model="currentArticle.homepage"/> 
+                                Homepage
+                            </div>
+                            <div class="bg-gray-500 text-white mt-2 p-1">Featured image</div>
+                            <div class="flex flex-col mb-2 h-32 items-center">
+                                <div class="bg-gray-700 h-32 w-full flex p-1 justify-center" v-if="currentArticle.image">
+                                    <img v-if="currentArticle.image" :src="$imageURL(currentArticle.image)" class="h-24 object-cover" :title="currentArticle.image.name" @click="$action('media')"/>
+                                </div> 
+                                <button @click="$action('media')" class="mt-1">Select Media</button>
+                                <!-- <moka-image-placeholder :image="currentArticle.image" @click="$action('media')" size="sm" @media="$action(),editorImage=false" @noimage="currentArticle.image=null"/> -->
                             
                             </div>
                             
-                            <label>Tags</label>
-                            <textarea v-model="currentArticle.tags" class="h-16 w-full text-xs"></textarea>
-                            <div class="text-xs text-gray-600">Set a tag per line</div>
-                            <div class="flex flex-col">
-                                <div class="text-xl">SEO</div>
+                            
+
+                            <div class="bg-gray-500 text-white mt-2 p-1">SEO</div>
+                            <div class="flex flex-col bg-gray-100 p-1 border">
                                 <label>Title</label>
                                 <input type="text" v-model="currentArticle.seo_title"/>
                                 <label>Description</label>
                                 <textarea class="text-sm w-full" v-model="currentArticle.seo_description"/>
                             </div>
+                            <div class="bg-gray-500 text-white mt-2 p-1">Tags</div>
+                            <textarea v-model="currentArticle.tags" class="h-16 w-full text-xs"></textarea>
+                            <div class="text-xs text-gray-600">Set a tag per line</div>
                         
                     </div>
                     
                 </div>
             </transition>
             <transition name="fade">
-                <div v-if="media" class="fixed top-0 left-0 m-auto rounded-lg bg-white">
+                <moka-modal
+                    size="fullscreen"
+                    position="modal"
+                    v-if="media"
+                    buttons="none"
+                    @close="media=!media">
+                    <div slot="title">Media</div>
+                    <div slot="content">
+                        <moka-media @newimage="setImage"/>
+                    </div>
+                    
+                <!-- <div v-if="media" class="fixed top-0 left-0 m-auto rounded-lg bg-white">
                     <moka-media :modal="true" @close="media=false" @newimage="setImage"/>
-                </div>
+                </div> -->
+                </moka-modal>
             </transition>
             <div class="fixed top-0 bg-black bg-opacity-50 left-0 z-max h-screen w-screen flex flex-col justify-center items-center" v-if="loading">
                 <div class="flex  lds-ring" v-if="loading"><div></div><div></div><div></div><div></div></div>
@@ -219,7 +252,8 @@ export default {
             { field: 'homepage' , label: 'Homepage' , sortable: false , list: true},
             { field: 'lang' , label: 'Language'  , sortable: true , list: true},
             { field: 'updatedAt' , label: 'Updated'  , sortable: true , list: true , date: true},
-            { field: 'template_id' , label: 'Template' , sortable: false , list: false }
+            { field: 'template_id' , label: 'Template' , sortable: false , list: false },
+            { field: 'template_preview' , label: 'Template' , sortable: false , list: false }
         ],
         createPage: false,
         newArticle: {
@@ -267,6 +301,10 @@ export default {
     },
     
     watch:{
+        editor(v){
+            !v ?
+                this.loadArticles() : null
+        },
         articleSlug(id){
             this.$api.service ( 'articles').get ( id ).then ( response => {
                 this.$store.dispatch('currentArticle', response )
@@ -312,11 +350,12 @@ export default {
     },
     methods:{ 
         templatePreview( id ){
-            let template = this.$mapState().datastore.dataset.components.filter ( template => {
-                return template._id === id            
-            })[0]
+            let template = this.$api.service('components').get ( id ).then ( res => { return res })
+            // let template = this.$mapState().datastore.dataset.components.filter ( template => {
+            //      return template._id === id            
+            // })[0]
             return template && template.image ?
-                this.$imageURL ( template.image ) : ''
+                 this.$imageURL ( template.image ) : ''
             /*
             console.log ( 'template' , this.datastore.dataset.components.filter ( comp => { return comp.blocks_id === id }) )
             return this.datastore.dataset.components.filter ( comp => { return comp.blocks_id === id })[0]
@@ -383,7 +422,6 @@ export default {
         setTemplate(id,blockID,template){
             console.log ( id )
             this.$api.service ( 'components' ).get ( id ).then ( result => {
-                console.log ( result )
                 this.currentArticle.blocks = result
                 this.currentArticle.component = result._id
                 this.currentArticle.template_id = result._id 
@@ -480,7 +518,22 @@ export default {
                 })
             })
         },
-        
+        loadArticles(){
+            let fields = this.columns.map ( col => {
+            return col.field
+            })
+            this.$api.service('articles').find ({
+                query : {
+                    $limit : 10,
+                    $skip: 0,
+                    $select: fields,
+                    $sort : this.sortby
+                }
+            }).then ( result => {
+                console.log ( result.data )
+                this.articles = result.data
+            })
+        }  
     },
     mounted(){
             let schema = this.$mapState().datastore.schema.articles

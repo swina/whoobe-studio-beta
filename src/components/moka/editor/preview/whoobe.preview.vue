@@ -34,9 +34,9 @@
 
                 <moka-slider :key="block.id" v-if="block.hasOwnProperty('slider')" :develop="true" :embeded="true" :doc="block" :editor="true"/>    
             </template>
-            
+        <moka-slider :key="doc.id" v-if="doc.hasOwnProperty('slider')" :develop="true" :embeded="true" :doc="doc" :editor="false"/>        
               
-        <div v-if="!$attrs.preview">
+        <!-- <div v-if="!$attrs.preview">
         <div id="actionButtons" v-if="!$attrs.dashboard" class="fixed bottom-0 right-0 z-top p-4 bg-black bg-opacity-50 opacity-0 hover:opacity-100">
             <i class="material-icons nuxpresso-icon-circle mr-2" v-if="editor.save" @click="$store.dispatch('loading',true),$store.dispatch('message','Saving blocks ...'),$emit('save')">save</i>
             <i class="material-icons nuxpresso-icon-circle" @click="$emit('close')">close</i>
@@ -44,7 +44,7 @@
         <div id="actionButtons" v-else class="fixed bottom-0 right-0 z-top p-4 bg-black bg-opacity-50">
             <i class="material-icons nuxpresso-icon-circle" @click="$emit('close')">close</i>
         </div>
-        </div>
+        </div> -->
 
         <div whoobe-global-plugins v-if="plugins">
             <template v-for="plugin in plugins">
@@ -52,16 +52,13 @@
                
             </template>
         </div>   
-        <div class="fixed bottom-0 right-0 mr-12 w-8 h-8 opacity-0 hover:opacity-100">
+        <!-- <div class="fixed bottom-0 right-0 mr-12 w-8 h-8 opacity-0 hover:opacity-100">
             <div class="flex flex-row relative">
                 <i class="material-icons  moka-icon-circle text-white" @click="resizeTo(365)">phone_iphone</i>
                 <i class="material-icons moka-icon-circle text-white" @click="resizeTo(1024,768)">tablet</i>
                 <i class="material-icons moka-icon-circle text-white" @click="resizeTo(0)">laptop_mac</i>
-            <!--<i class="material-icons absolute top-0 left-0 moka-icon-circle text-white visible md:invisible">phone_iphone</i>
-            <i class="material-icons absolute top-0 left-0 moka-icon-circle text-white invisible md:visible lg:invisible">tablet</i>
-            <i class="material-icons absolute top-0 left-0 moka-icon-circle text-white invisible lg:visible">laptop_mac</i>-->
             </div>
-        </div> 
+        </div>  -->
             
     </div>
 </template>

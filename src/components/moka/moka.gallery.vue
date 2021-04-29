@@ -1,18 +1,8 @@
 <template>
   <div v-if="init" :id="$randomID()" :key="galleryID">
-    <div
-      v-if="gallery"
-      class="whoobe-components-gallery sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 md:gap-8"
-    >
+    <div v-if="gallery" class="whoobe-components-gallery sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 md:gap-8">
       <!-- GALLERY -->
-      <div
-        v-for="(comp, c) in objects"
-        class="whoobe-components-gallery-container"
-        :title="
-          comp.name + '-' + comp.description + ' ' + $moment(comp.updatedAt)
-        "
-        :key="comp._id"
-      >
+      <div v-for="(comp, c) in objects" class="whoobe-components-gallery-container" :title="comp.name + '-' + comp.description + ' ' + $moment(comp.updatedAt)" :key="comp._id">
         <div>
           <div class="whoobe-component-gallery-title">
             {{ comp.name.substring(0, 30) }}
@@ -39,64 +29,29 @@
           ></div>
 
           <!--ACTIONS-->
-          <div
-            class="whoobe-component-gallery-actions"
-            @mouseleave="moreID = null"
-          >
+          <div class="whoobe-component-gallery-actions" @mouseleave="moreID = null">
             <div>
-              <div
-                v-if="moreID === comp._id"
-                @mouseleave="moreID = null"
-                class="menu"
-              >
-                <div
-                  class="pl-1 hover:bg-white"
-                  @click="restoreAutosave(comp)"
-                  title="Restore from autosave"
-                >
+              <div v-if="moreID === comp._id" @mouseleave="moreID = null" class="menu">
+                <div class="pl-1 hover:bg-white" @click="restoreAutosave(comp)" title="Restore from autosave">
                   Restore
                 </div>
-                <div
-                  class="pl-1 hover:bg-white"
-                  @click="addToLibrary(comp, 'library')"
-                  title="Export"
-                >
+                <div class="pl-1 hover:bg-white" @click="addToLibrary(comp, 'library')" title="Export">
                   Add to export
                 </div>
-                <div
-                  class="pl-1 hover:bg-white"
-                  @click="selectComponent(comp.id, 'duplicate', comp)"
-                  title="Duplicate"
-                >
+                <div class="pl-1 hover:bg-white" @click="selectComponent(comp.id, 'duplicate', comp)" title="Duplicate">
                   Duplicate
                 </div>
-                <div
-                  class="pl-1 hover:bg-white"
-                  @click="
-                    (index = c),
-                      (current = comp._id),
-                      (confirmModal = !confirmModal)
-                  "
-                >
+                <div class="pl-1 hover:bg-white" @click="(index = c),(current = comp._id),(confirmModal = !confirmModal)">
                   Delete
                 </div>
               </div>
               <div class="w-full p-1 flex flex-row justify-around">
-                <i
-                  class="material-icons xs mr-2 hover:text-blue-500"
-                  title="Edit"
-                  @click="selectComponent(comp.id, 'component', comp)"
-                  >edit</i
-                >
-                <i
-                  class="material-icons xs ml-2 hover:text-blue-500"
-                  title="Preview"
-                  @click="selectComponent(comp.id, 'preview', comp)"
-                  >preview</i
-                >
-                <i class="material-icons" @click="moreID = comp._id"
-                  >more_vert</i
-                >
+                
+                <i class="material-icons xs mr-2 hover:text-blue-500" title="Edit" @click="selectComponent(comp.id, 'component', comp)">edit</i>
+                
+                <i class="material-icons xs ml-2 hover:text-blue-500" title="Preview" @click="selectComponent(comp.id, 'preview', comp)">preview</i>
+
+                <i class="material-icons" @click="moreID = comp._id">more_vert</i>
               </div>
             </div>
           </div>
@@ -112,23 +67,17 @@
     />
 
     <transition name="fade">
-      <div
-        class="nuxpresso-modal bg-white border shadow p-4 z-max"
-        v-if="confirmModal"
-      >
-        <h5>Delete this object ?</h5>
-        <button @click="(confirm = false), (confirmModal = !confirmModal)">
-          No
-        </button>
-        <button
-          class="ml-2 danger"
-          @click="
-            (confirm = true), (confirmModal = !confirmModal), removeBlock()
-          "
-        >
-          Yes, delete
-        </button>
-      </div>
+      <moka-modal v-if="confirmModal"
+        size="sm"
+        position="modal"
+        @close="confirmModal=!confirmModal"
+        @click_0="confirmModal=!confirmModal"
+        @click_1="confirm=true,confirmModal=!confirmModal,removeBlock()">
+        <div slot="title">Delete object</div>
+        <div slot="content" class="p-4">
+          Delete this object ?
+        </div>
+      </moka-modal>
     </transition>
 
     <transition name="fade">
@@ -196,6 +145,23 @@ export default {
   mounted() {
     this.loadData();
     this.galleryID = this.$randomID();
+    let vm = this
+    this.$api.service('components').on ( 'created' , (data)=>{
+        this.$message ( 'A new blocks component has been created' )
+        console.log ( 'created ========> ' , data )
+        this.datastore.dataset.components.unshift(data)
+        this.loadData()
+        vm.selectComponent(data._id, 'component', data)
+    })
+    this.$api.service('components').on ( 'removed' , ( data )=>{
+        console.log ( 'removed =======> ' , data )
+        this.$message ( 'Blocks component has been removed' )
+        let objects = this.objects.filter ( ( comp, i) => {
+          return comp._id != data._id 
+        })
+        this.objects = objects
+        this.$components()
+    })
   },
   watch: {
     filter() {
@@ -211,16 +177,22 @@ export default {
   },
   methods: {
     loadData() {
-      this.$store.dispatch("loading", true);
-
-      this.$api
-        .service("components")
-        .find({ query: { category: this.filter, $limit: 300 , $sort: { updatedAt: -1} } })
-        .then((result) => {
-          this.$store.dispatch("loading", false);
-          this.allObjects = result.data;
-          this.objects = this.allObjects;
-        });
+      this.$loading(true)
+      this.$api.service ( 'components' ).find ( {
+        query: {
+          $limit: 300,
+          $skip: 0,
+          category: this.filter
+        }
+      }).then ( res => {
+        this.$store.dispatch ( 'dataset' , { table: 'components' , data: res.data })
+        this.allObjects = this.datastore.dataset.components
+        this.objects = this.allObjects.filter ( comp => {
+          return comp.category === this.filter
+        })
+        this.$loading()
+      })
+      return true
     },
     showOptions(id) {
       if (id === this.overID) {
@@ -229,16 +201,18 @@ export default {
       return "opacity-0";
     },
     selectComponent(id, action, component) {
-      
-      this.$emit(action, component);
-      return;
-      this.$http.get("components/" + id).then((result) => {
-        if (action === "duplicate") {
-          this.duplicateBlock(result.data);
-        } else {
-          this.$emit(action, result.data);
-        }
-      });
+      console.log( id,action,component)
+      this.$api.service('components').get ( component._id ).then ( res => {
+        this.$emit(action, res );
+      })
+      //return;
+      // this.$http.get("components/" + id).then((result) => {
+      //   if (action === "duplicate") {
+      //     this.duplicateBlock(result.data);
+      //   } else {
+      //     this.$emit(action, result.data);
+      //   }
+      // });
     },
     selectComponentTable(comp) {
       this.selectComponent(comp.id, "component");
@@ -297,11 +271,10 @@ export default {
       this.$api
         .service("components")
         .remove(this.current)
-        .then((result) => {
-          //this.$http.delete ( 'components/' + this.current ).then ( result => {
-          this.datastore.dataset.components.splice(this.index, 1);
-          console.log(result);
-        });
+        // .then((result) => {
+        //   this.datastore.dataset.components.splice(this.index,1);
+        //   console.log(result);
+        // });
     },
 
     removeElement() {

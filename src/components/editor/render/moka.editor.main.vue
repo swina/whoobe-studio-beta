@@ -734,7 +734,7 @@ export default {
         },
         //duplicate current element
         duplicateElement(current){
-            
+            /*
             delete this.editor.current.parent    
             var parent = jp.parent ( this.$attrs.component , '$..blocks[?(@.id=="' + current.id + '")]' )
             console.log ( parent )
@@ -751,6 +751,9 @@ export default {
                 parent.splice ( i+1 , 0 , obj )
                 this.$message ( 'Element duplicated')
             }
+            */
+
+            
             /*
             let el = JSON.parse(JSON.stringify(this.editor.current))
             let obj = this.$clone ( el )

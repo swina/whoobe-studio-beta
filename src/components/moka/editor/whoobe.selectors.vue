@@ -4,7 +4,7 @@
      
     <div v-if="$attrs.category!='element' && !doc.hasOwnProperty('slider')" @contextmenu="showContext">
           
-        <div :class="'relative border-4 border-dashed p-10 text-black ' + docCss" :style="stile(doc,true) + ' ' + background(doc)" id="content">
+        <div :class="'relative shadow-inner border-2 border-dashed p-10 text-black ' + docCss" :style="stile(doc,true) + ' ' + background(doc)" id="content">
             <template v-for="(block,b) in doc.blocks">
                 
                 <whoobe-container 
@@ -20,6 +20,8 @@
                     :coords="[0,b]" 
                     :zi="b+1"
                     @selected="selected"/>
+                
+                
                     <!--
                     @customize="customize" 
                     @animations="animation=!animation"
@@ -42,6 +44,13 @@
         </div>
         
     </div> 
+
+    <whoobe-editor-slides
+        v-if="doc && doc.hasOwnProperty('slider')"
+        :key="doc.id"
+        :doc="doc"
+        :component="doc"/>
+
     <whoobe-status-bar :component="component"/>
 
     <!-- context menu -->
@@ -344,6 +353,7 @@ import WhoobeSideBar from '@/components/moka/editor/components/whoobe.editor.sid
 import WhoobeStatusBar from '@/components/moka/editor/components/whoobe.editor.status.bar'
 import WhoobeContainer from '@/components/moka/editor/components/whoobe.editor.container'
 import WhoobeEditorContextMenu from '@/components/moka/editor/components/whoobe.editor.context.menu'
+import WhoobeEditorSlides from '@/components/editor/render/moka.editor.slides'
 import gsap from 'gsap'
 import gsapEffects from '@/plugins/animations'
 import { mapState } from 'vuex' 
@@ -385,6 +395,7 @@ export default {
         WhoobeSideBar,
         WhoobeStatusBar,
         WhoobeEditorContextMenu,
+        WhoobeEditorSlides
     },
     props: [ 'doc' , 'component' ],
     
@@ -417,7 +428,6 @@ export default {
     },
     methods: {
         selected(el){
-            //console.log ( 'current =>' , el.type , el.id)
             this.current = el 
             this.$store.dispatch('current',el)
         },
@@ -427,7 +437,6 @@ export default {
             if ( block.hasOwnProperty('fontFamily')){
                 stile += 'font-family:\"' + block.fontFamily + '\"; '
             }
-            console.log ( stile )
             return block.hasOwnProperty('style') ? block.style + stile : stile
         },
         background(block){
@@ -464,6 +473,7 @@ export default {
         },
         showContext(e){
             e.preventDefault()
+            console.log ( window.pageYOffset )
             if ( e.clientX < (window.innerWidth - 300) ) {
                  this.$refs.contextMenu.style.left = (e.clientX - 20) + 'px'
             } else {
@@ -474,7 +484,7 @@ export default {
                 }
             }
             if ( e.clientY < 250 ){
-                this.$refs.contextMenu.style.top = '20px'    
+                this.$refs.contextMenu.style.top = window.pageYOffset ? window.pageYOffset + 50  + 'px': 50  + 'px'    
             } else {
                 this.$refs.contextMenu.style.top = (window.pageYOffset + e.clientY-200) + 'px'
             }
@@ -487,7 +497,6 @@ export default {
             var parent = jp.parent ( this.component.json , '$..blocks[?(@.id=="' + current.id + '")]' )
             let i 
             if ( parent ){
-                console.log ( parent )
                 parent.forEach ( (p,index) => {
                     if ( p.id === current.id ){
                         i = index
@@ -495,7 +504,7 @@ export default {
                 })
                 let el = JSON.parse(JSON.stringify(current))
                 let obj = this.$clone ( el )
-                console.log ( i , obj )
+                
                 //obj.id = randomID()
                 parent.splice ( i+1 , 0 , obj )
                 this.$message('Element duplicated')
@@ -507,7 +516,6 @@ export default {
         this.current = this.doc.blocks[0].blocks[0]
         this.$store.dispatch('setCurrent',this.current)
         window.addEventListener("keydown", e => {
-
             if ( e.altKey && e.code === 'KeyB' ){
                 this.doc && !this.doc.hasOwnProperty('slider') ?
                     vm.$emit('preview') :
@@ -518,7 +526,6 @@ export default {
             }
 
             if ( e.altKey && e.code === 'KeyL' ){
-                console.log ( document.getElementById(this.$mapState().editor.current.id) )
                 if (window.CustomEvent) {
                     document.getElementById(this.$mapState().editor.current.id).dispatchEvent(new CustomEvent('contextmenu'))
                 }
@@ -558,7 +565,6 @@ export default {
                 }
             }
             if ( e.altKey && e.code === 'KeyC' ){
-                console.log ( 'copy element ...')
                 if ( this.editor.current ){
                     this.$store.dispatch('message','Element copied')
                     this.$emit('copy',this.editor.current)
@@ -571,8 +577,9 @@ export default {
             }
             if ( e.altKey && e.code === 'KeyD' ){
                 if ( this.current  ){
-                    this.$emit('duplicate',this.current)
-                    //this.$block_duplicate(this.component)
+                    //this.$emit('duplicate',this.current)
+                    this.$emit('duplicate',this.$mapState().editor.component,this.$mapState().editor.current)
+                    //this.$block_duplicate(this.$mapState().editor.component,this.$mapState().editor.current)
                     //this.$emit('duplicate',this.editor.current)
                 }
             }

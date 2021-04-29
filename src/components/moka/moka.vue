@@ -79,6 +79,7 @@ export default {
     computed: {
         ...mapState ( ['moka','editor'] ),
         loadComponent(){
+            console.log ( this.$mapState().desktop.currentTab )
             if ( parseInt(this.$attrs.tab) === parseInt(this.$mapState().desktop.currentTab) && !this.loaded ){
                 this.component = this.$attrs.blocks
                 this.$store.dispatch ( 'setComponent' , this.component )

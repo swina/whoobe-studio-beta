@@ -80,7 +80,8 @@ export default {
         },
         background(block){
             if ( !block ) return 
-            return block.hasOwnProperty('image') ?
+            return block.hasOwnProperty('image') && block.image ?
+
                 ' background-image:url(' + this.$imageURL(block.image) + ');' : ''
                 /*
                 block.image && block.image.url ? 

@@ -215,6 +215,21 @@ var classes = {
     opacity: setOpacity('opacity'),
     colors: colors,
     bgcolor : setColors('bg'),
+    from: setColors('from'),
+    to: setColors('to'),
+    via: setColors('via'),
+    gradient: [
+            
+        { label: 'Top'          , value: 'bg-gradient-to-t'     },
+        { label: 'Top Right'    , value: 'bg-gradient-to-tr'    },
+        { label: 'Right'        , value: 'bg-gradient-to-r'     },
+        { label: 'Bottom Right' , value: 'bg-gradient-to-br'    },
+        { label: 'Bottom'       , value: 'bg-gradient-to-b'     },
+        { label: 'Bottom Left'  , value: 'bg-gradient-to-bl'    },
+        { label: 'Left'         , value: 'bg-gradient-to-l'     },
+        { label: 'Top Left'     , value: 'bg-gradient-to-tl'    }
+    ],
+    blur:[ 'blur-1' , 'blur-2' , 'blur-3' , 'blur-4' , 'blur-5' ],
     flexdirection : [ 'flex-col' , 'flex-row' , 'flex-col-reverse' , 'flex-row-reverse' ],
     flexorder:[
         'order-first',

@@ -3,7 +3,8 @@ const desktop =  {
         filter: '',
         tabs: [],
         cloudinary_image: null,
-        error: null
+        error: null,
+        currentTab: 0
     },
     mutations: {
         filter ( state , payload ){
@@ -14,13 +15,14 @@ const desktop =  {
         },
         add_tab ( state , payload ){
             state.tabs.push ( payload )
+            state.currentTab = state.tabs.length-1
         },
         cloudinary_image ( state , payload ){
             state.cloudinary_image = payload
         },
         error ( state , error ){
             state.error = error 
-        }
+        },
     },
     actions : {
         filter ( { commit } , payload ){

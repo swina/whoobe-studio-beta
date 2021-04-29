@@ -1,7 +1,7 @@
 <template>
         <ul class="tree cursor-pointer" >
-            <li class="border-0 pl-1 list-none hover:bg-gray-900 text-gray-200 flex py-1 items-center">
-                <div class="w-9/12 flex items-center" @click="setCurrent(doc)"><i class="material-icons mr-2">{{icon(doc)}}</i> {{doc.type}} {{doc.tag}}</div>
+            <li class="border-0 border-gray-800 pl-1 list-none hover:bg-gray-900 text-gray-200 flex py-1 items-center">
+                <div class="w-10/12 flex items-center" @click="setCurrent(doc)"><i class="material-icons mr-2">{{icon(doc)}}</i> {{doc.type}} {{doc.tag}}</div>
                 <i class="absolute right-0 mr-2 material-icons" @click="expand=!expand">expand_more</i></li>
             <transition name="fade">
             <draggable v-model="doc.blocks">

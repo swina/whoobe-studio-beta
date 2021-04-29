@@ -1,5 +1,5 @@
 <template>
-    <div :data="init">
+    <div :data="init" class="p-2">
         <!-- material icons -->
         <div v-if="$attrs.tag==='icon'" class="flex flex-col">
             <i class="material-icons m-auto p-2 border" v-if="$attrs.value">{{ $attrs.value }}</i>

@@ -7,11 +7,14 @@
           <button @click="uploadFile = !uploadFile">Upload</button>
 
           <button
-            class="ml-2 items-center"
+            class="mx-2 items-center flex flex-row"
             id="upload_widget"
             @click="$action('cloudinary')">
             <i class="material-icons">upload</i> <span>Cloudinary</span>
           </button>
+          <button v-if="pixabayPlugin" @click="pixabay=!pixabay">Download from Pixabay</button>
+          <button @click="gallery=!gallery" class="mx-2">Carousel</button>
+          <button @click="componentsPreview=!componentsPreview" class="mx-2">Components</button>
           <!-- <moka-cloudinary-upload class="mx-2" v-if="cloudinary" :config="cloudinary.config" @cloudinary="addImageCloudinary"/> -->
         </div>
 
@@ -39,13 +42,30 @@
             class="mr-2 w-2/3"/>
         </div>
       </div>
-      <!--<div class="bg-gray-200 h-full border-1 rounded-lg shadow p-8 relative overflow-y-auto">-->
-      <!-- <i v-if="$attrs.modal" class="material-icons absolute top-0 right-0" @click="$emit('close')">highlight_off</i> -->
-      <div :class="'flex flex-wrap border rounded p-4 h-3/4 overflow-y-auto grid ' + isEdit" v-if="files && !openCloudinary">
+      
+        
+        <draggable v-if="gallery || galleryImages.length" class="mt-2 border border-dashed border-white rounded bg-gray-200 h-40 w-full p-4 flex flex-row flex-wrap items-center justify-start relative">
+          <template v-for="(img,i) in galleryImages">
+              <img
+                  :src="$imageURL(img)"
+                  class="h-24 w-32 object-cover mx-2 shadow object-center cursor-move" 
+                  @dblclick="galleryImages.splice(i,1)" title="drag to reorder, dblckick to remove"/> 
+
+          </template>
+          <div class="w-full absolute bottom-0 text-center">
+            <button class="mx-2" v-if="galleryImages" @click="clearGallery()">Clear</button>
+            <button @click="((setImage(galleryImages)),(selected=galleryImages))">Set Carousel</button>
+          </div>
+        </draggable>
+      <draggable :list="galleryImages" group="gallery" v-if="gallery || galleryImages.length"  class="border-4 border-dashed flex flex-row h-10 justify-center items-center mb-4">
+        Drag here or click on the image to add to carousel
+      </draggable>
+    
+        <draggable  :list="files" :group="{ name: 'gallery', pull: 'clone', put: false }" item=".draggable-img"  :class="'flex flex-wrap border rounded p-4 h-3/4 overflow-y-auto grid ' + isEdit" v-if="files && !openCloudinary">
         <template v-for="(element, n) in files">
 
           <div :key="n" class="px-2 bg-white text-xs cursor-pointer mb-2"
-            @click="setImage(element), (selected = element)"
+            @click="!gallery ? ( setImage(element) , (selected = element) ) : galleryImages.push ( element )"
             :title="element.name"
             v-if="element.hasOwnProperty('name')">
             <div :class="'mb-1 overflow-hidden border-4 border-transparent ' + active(element)">
@@ -54,7 +74,7 @@
                   <img
                     v-if="element.url && element.mime.includes('image')"
                     :src="$imageURL(element)"
-                    class="w-auto h-auto block m-auto"
+                    class="w-auto h-auto block m-auto draggable-img"
                   />
                   <!--<i v-if="!element.mime.includes('image')" class="material-icons text-gray-400 text-5xl">insert_drive_file</i>-->
                 </div>
@@ -73,7 +93,8 @@
             </div>
           </div>
         </template>
-      </div>
+        </draggable>
+      <!-- </div> -->
       <div class="w-full text-center my-4 grid grid-cols-3 grid-cols-auto">
         <div class="text-left flex flex-row items-center">
           <span class="text-xs">[{{ total }} files]</span>
@@ -166,102 +187,7 @@
                 <moka-media-format :selectedImage="selectedImage" @image="assignImg" @close="$action()"></moka-media-format>
             </div>
           </moka-modal>
-        <!--
-        <div
-          v-if="selectThumbnail"
-          class="nuxpresso-modal w-3/4 p-2 z-2xtop max-h-screen"
-        >
-          <i
-            class="material-icons absolute right-0 top-0 m-1"
-            @click="selectThumbnail = !selectThumbnail"
-            >close</i
-          >
-          <p>This image has a different formats. Select one.</p>
-
-          <div class="flex flex-row text-xs">
-            <div class="w-1/2 p-2">
-              <img
-                :src="$imageURL(selectedImage)"
-                class="border w-full object-fit"
-                @click="assignImg(selectedImage)"
-              />
-              <div v-if="selectedImage.hasOwnProperty('width')">
-                {{ selectedImage.width }} x {{ selectedImage.height }} -
-                {{ parseInt(selectedImage.size / 1000) }} KB
-              </div>
-            </div>
-            <div class="w-1/2 p-2">
-              <div
-                v-if="Object.keys(selectedImage.formats)"
-                class="flex flex-row flex-wrap text-xs"
-              >
-                <template
-                  v-for="(format, index) in Object.keys(
-                    selectedImage.formats
-                  ).sort()"
-                >
-                  <div v-if="format != 'thumbnail'" class="mx-2">
-                    {{ format }}
-                    <img
-                      :src="$imageURL(selectedImage.formats[format])"
-                      :class="'border h-auto ' + autoSize(index)"
-                      @click="
-                        assignImg(selectedImage.formats[format], selectedImage)
-                      "
-                    />
-                    <div
-                      class="text-xs"
-                      v-if="
-                        selectedImage.formats[format].hasOwnProperty('width')
-                      "
-                    >
-                      {{ selectedImage.formats[format].width }} x
-                      {{ selectedImage.formats[format].height }} -
-                      {{
-                        parseInt(selectedImage.formats[format].size / 1000000)
-                      }}
-                      KB
-                    </div>
-                  </div>
-                  <div v-else class="absolute bottom-0 right-0 m-2">
-                    Thumb
-                    <img
-                      :src="$imageURL(selectedImage.formats[format])"
-                      class="border w-12 h-auto"
-                      @click="
-                        assignImg(selectedImage.formats[format], selectedImage)
-                      "
-                    />
-                    <div
-                      class="text-xs"
-                      v-if="
-                        selectedImage.formats[format].hasOwnProperty('width')
-                      "
-                    >
-                      {{ selectedImage.formats[format].width }} x
-                      {{ selectedImage.formats[format].height }} -
-                      {{
-                        parseInt(selectedImage.formats[format].size / 1000)
-                      }}
-                      KB
-                    </div>
-                  </div>
-                </template>
-              </div>
-              <div v-else>
-                <img
-                  :src="$imageURL(selectedImage)"
-                  class="border w-full h-auto"
-                  @click="assignImg('thumb')"
-                />
-                {{ selectedImage.formats.thumbnail.width }} x
-                {{ selectedImage.formats.thumbnail.height }} -
-                {{ selectedImage.formats.thumbnail.size }} KB
-              </div>
-            </div>
-          </div>
-        </div>
-        -->
+        
       </transition>
       <!-- DELETE OBJECT MODAL -->
       <transition name="fade">
@@ -274,49 +200,36 @@
           <button class="ml-2 danger" @click="deleteMedia">Yes, delete</button>
         </div>
       </transition>
-      <!-- IMAGE FROM URL -->
-<!--       
-      <transition name="fade">
-        <moka-modal
-          size="md"
-          v-if="imageURL || unsplash"
-          @close="(imageURL = ''), (unsplash = '')"
-          @click_0="(imageURL = ''), (unsplash = '')"
-          @click_1="setImageByURL()"
-        >
-          <div slot="title">Image URL</div>
-          <div slot="content" class="p-2">
-            <img
-              :src="imageURL || 'https://source.unsplash.com/' + unsplash"
-              class="w-full object-contain"
-            />
-            <div v-if="editor.current && editor.current.image" class="text-xs">
-              {{ editor.current.image.width }} x
-              {{ editor.current.image.height }}
-              <span class="px-1 bg-gray-300 text-black rounded uppercase">{{
-                editor.current.image.ext
-              }}</span>
-            </div>
-          </div>
-        </moka-modal>
-      </transition> -->
-      <!--<template v-for="img in images">
-            <img :src="'/img/' + img.name" class="w-24"/>
-        </template>-->
-
-      <!-- <moka-modal v-if="openCloudinary" @close="openCloudinary=!openCloudinary">
-            <div slot="content" id="cloudinary">
-                <moka-cloudinary-upload class="mx-2" v-if="cloudinary" :config="cloudinary.config" @cloudinary="addImageCloudinary"/>
-            </div>
-
-        </moka-modal> -->
+     
       <textarea
         class="opacity-100 h-20 w-40"
         id="myUpload"
         @input="emitImage"
       />
     </div>
-    
+    <moka-cloudinary :data="iscloudinary" class="mx-2" v-if="editor.action==='cloudinary'" :config="cloudinary.component.config" @cloudinary="$action('cloudinaryImage')"/>
+    <moka-modal
+      v-if="pixabay"
+      @close="pixabay=!pixabay"
+      size="full">
+      <div slot="title">Pixabay Search</div>
+      <div slot="content">
+        <whoobe-pixabay @close="pixabay=!pixabay"/>
+      </div>
+    </moka-modal>
+    <moka-modal
+      size="lg"
+      position="modal"
+      v-if="componentsPreview"
+      @close="componentsPreview=!componentsPreview"
+      buttons="none">
+      <div slot="title">Previews</div>
+      <div slot="content" class="flex flex-row justify-around p-4">
+        <template v-for="component in $mapState().datastore.dataset.components">
+          <img v-if="component.image" :src="$imageURL(component.image)" class="cursor-pointer w-48 h-24 object-cover object-top mx-2" @click="setComponentsPreviewImage(component.image),componentsPreview=!componentsPreview" :title="component.name"/>
+        </template>
+      </div>
+    </moka-modal>
   </div>
 </template>
 
@@ -325,11 +238,12 @@ import MokaUpload from "@/components/media/media.upload"
 import MokaEditMedia from "@/components/media/media.edit"
 import MokaMediaFormat from './media.select.format'
 import WhoobeEditorActions from '@/components/moka/editor/whoobe.editor.actions'
-//import MokaCloudinaryUpload from '@/components/plugins/cloudinary/cloudinary.widget'
+import WhoobePixabay from '@/components/plugins/pixabay/pixabay'
+import draggable from 'vuedraggable'
 import { mapState } from "vuex";
 export default {
   name: "MokaMedia",
-  components: { MokaUpload, MokaEditMedia , MokaMediaFormat , WhoobeEditorActions }, //, MokaCloudinaryUpload },
+  components: { MokaUpload, MokaEditMedia , MokaMediaFormat , WhoobeEditorActions,  WhoobePixabay , draggable }, //, MokaCloudinaryUpload },
   data: () => ({
     selected: null,
     search: "",
@@ -343,15 +257,20 @@ export default {
     total: 0,
     imageURL: "",
     unsplash: "",
+    gallery: false,
+    galleryImages: [],
     extImage: null,
     cloudinary: null,
     openCloudinary: false,
     files: null,
     allFiles: null,
     fullscreen: false,
+    pixabay: false,
+    pixabayPlugin: false,
+    componentsPreview: false
   }),
   computed: {
-    ...mapState(["moka", "editor", "datastore"]),
+    ...mapState(["moka", "desktop" , "editor", "datastore"]),
     modalSize() {
       return this.fullscreen ? "full" : "md";
     },
@@ -363,6 +282,13 @@ export default {
     },
     isEdit() {
       return this.edit ? "w-2/3 grid-cols-3" : "grid-cols-5";
+    },
+    iscloudinary(){
+      this.datastore.dataset.plugins ? 
+            this.cloudinary = this.datastore.dataset.plugins.filter ( plugin => {
+                return plugin.component.path === 'cloudinary/cloudinary.widget'
+            })[0] : null
+      return true
     },
   },
   watch: {
@@ -398,8 +324,8 @@ export default {
   methods: {
     
     query(){
+      this.$loading(true)
       let vm= this
-      console.log ( vm.search )
        this.$api
         .service("media")
         .find(
@@ -411,7 +337,7 @@ export default {
             } 
           })
         .then((response) => {
-          console.log ( response )
+          this.$loading()
           this.files = response.data;
           this.allFiles = response.data
           this.total = response.total;
@@ -447,11 +373,19 @@ export default {
           this.selectThumbnail = true;
           this.selectedImage = img;
         } else {
+          console.log ( 'assign image => ' , img )
           this.selectThumbnail = false
           this.selectedImage = img;
           this.assignImg(this.selectedImage);
         }
       }
+    },
+    clearGallery(){
+      this.editor.current.gallery = null
+      this.editor.current.image = null
+      this.gallery = false
+      this.galleryImages = []
+      this.$action()
     },
     setImageByURL() {
       var imgURL = new Image();
@@ -476,6 +410,28 @@ export default {
         this.$emit("close");
       };
     },
+    setComponentsPreviewImage(img) {
+      var imgURL = new Image();
+      imgURL.src = this.$imageURL(img);
+      let name = this.imageURL.split(".");
+      let ext = name[name.length - 1];
+      name = "external";
+      let width, height;
+      imgURL.onload = () => {
+        this.extImage = {
+          url: img,
+          size: imgURL.size,
+          width: imgURL.width,
+          height: imgURL.height,
+          ext: name,
+          name: name,
+          caption: "",
+          alternativeText: "",
+        };
+        console.log ( this.extImage )
+        this.assignImg ( this.extImage )
+      };
+    },
     assignImg(image) {
       if (!image) return;
       /*
@@ -491,8 +447,36 @@ export default {
       delete img.formats;
       console.log(img);
       */
-      if ( this.editor.current.hasOwnProperty('image') ){
-        this.editor.current.image = image
+      alert ( this.desktop.tabs[this.desktop.currentTab].mode )
+      if ( this.desktop.tabs[this.desktop.currentTab].mode === 'articles' ){
+        this.datastore.currentArticle.image = image 
+        this.$action()
+        return 
+      }
+      if ( this.desktop.tabs[this.desktop.currentTab].mode === 'block' && this.editor.current.hasOwnProperty('image') ){
+        if ( Array.isArray(image) ){
+          if ( this.editor.current.hasOwnProperty('gallery') && this.editor.current.gallery.hasOwnProperty('navigation') ) {
+            this.editor.current.gallery.images = image 
+          } else {
+
+            this.editor.current.gallery = { 
+              images: image ,
+              "animation":'',
+              "delay":1,
+              "navigation":{
+                "enable":false,
+                  "icons":["chevron_left","chevron_right"],
+                  "css":"",
+                  "hover":false,
+                  "position":"justify-center"
+              },
+              "dots":{"enable":false,"css":""}
+            }
+          }
+          this.editor.current.image = image[0]
+        } else {
+          this.editor.current.image = image
+        }
         this.$action()
         return
       }
@@ -566,11 +550,11 @@ export default {
     this.query()
     
     //media deleted
-    this.$api.service("media").on("deleted", (data) => {
-      this.allFiles.filter ( image => {
+    this.$api.service("media").on("removed", (data) => {
+      this.allFiles = this.allFiles.filter ( image => {
         return image._id != data._id
       })
-      this.files.filter ( image => {
+      this.files = this.files.filter ( image => {
         return image._id != data._id
       })
       this.$message("Media deleted");
@@ -581,31 +565,19 @@ export default {
       this.allFiles.unshift ( data )
       this.total = this.total+1
     })
-    /*
-        this.datastore.dataset.plugins ? 
-            this.cloudinary = this.datastore.dataset.plugins[0].plugins.filter ( plugin => {
-                console.log ( plugin.component )
-                return plugin.component === 'cloudinary/cloudinary.widget'
-            })[0] : null
-        */
-    /*
-        this.$http.get ( 'plugins' ).then ( response => {
-            let plugins = response.data.plugins
-            plugins.forEach ( plugin => {
-                if ( plugin.component === 'cloudinary/cloudinary.widget' ){
-                    this.cloudinary = plugin.config
-                }
-            })
-        })
-        */
 
-    /*this.$http.get ( 'upload/files/count?' ).then ( response => {
-            this.total = response.data
-        })
-        if ( this.editor && this.editor.current && this.editor.current.image && this.editor.current.image.url.includes('http') ){
-                this.imageURL = this.editor.current.image.url
-        }
-        */
+
+    //plugins 
+    this.datastore.dataset.plugins.filter ( plugin => {
+      if ( plugin.component.path === 'pixabay/pixabay' && plugin.component.config.apikey && plugin.general.enabled ){
+        this.pixabayPlugin = true
+      }
+    })
+
+    //is there a gallery when setting images for a component
+    if ( this.$mapState().editor.current.hasOwnProperty('gallery') && this.$mapState().editor.current.gallery && this.$attrs.filter != 'manager' ){
+      this.galleryImages = this.$mapState().editor.current.gallery.images
+    }
   },
 };
 </script>

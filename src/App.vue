@@ -12,7 +12,7 @@
 
     <whoobe-actions></whoobe-actions>
 
-    <moka-cloudinary :data="iscloudinary" class="mx-2" v-if="editor.action==='cloudinary'" :config="cloudinary.config" @cloudinary="$action('cloudinaryImage')"/>
+    
     <!--<moka-modal v-if="editor.action && components.hasOwnProperty(editor.action)" @close="$action()">
       <component :is="component" :component="component"/>
     </moka-modal>-->

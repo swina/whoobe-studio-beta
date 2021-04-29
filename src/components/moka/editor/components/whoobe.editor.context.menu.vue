@@ -19,6 +19,9 @@
         <div v-if="editor.current.type==='grid' || editor.current.type==='flex'" class="editor-context-menu-item" @click="$action('media')">
             <i class="material-icons mr-4">photo</i>Background image
         </div>
+        <div v-if="editor.current.hasOwnProperty('gallery') && editor.current.gallery.images" class="editor-context-menu-item" @click="$action('slidersettings')">
+            <i class="material-icons mr-4">photo</i>Carousel settings
+        </div>
         <div v-if="editor.current.type==='element' || editor.current.type==='button'" class="editor-context-menu-item" @click="$action('block_edit')">
             <i class="material-icons mr-4">edit</i>Edit content <span class="text-right ml-4">(Alt + w)</span>
         </div>

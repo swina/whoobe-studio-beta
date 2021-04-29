@@ -26,7 +26,16 @@
             -->
         </div>
         <!--<i class="material-icons z-highest text-5xl fixed top-0 right-0 text-gray-400" @click="closeMe">close</i>-->
-        <moka-editor-preview v-if="doc" :doc="doc" :preview="true" :loop="false" :develop="true" @save="$emit('save')"/>
+        <moka-editor-preview 
+            v-if="doc && !doc.hasOwnProperty('slider')" 
+            :doc="doc" 
+            :preview="true" 
+            :loop="false" 
+            :develop="true" 
+            @save="$emit('save')"/>
+
+        <moka-slider :key="doc.id" v-if="doc.hasOwnProperty('slider')" :develop="true" :embeded="true" :doc="doc" :editor="true"/>    
+
         <moka-loading v-if="!doc"/>
         <moka-modal size="lg" class="modal w-3/5" v-if="showHtml" @close="showHtml=!showHtml" buttons="none">
             <div slot="title">HTML</div>
@@ -43,6 +52,7 @@ import WhoobePreviewContextMenu from '@/components/moka/editor/preview/whoobe.pr
 import MokaEditorPreview from '@/components/editor/preview/moka.preview'
 import WhoobePreviewHtml from '@/components/moka/editor/preview/whoobe.preview.html'
 import WhoobePreviewPrintscreen from '@/components/moka/editor/preview/whoobe.preview.printscreen'
+
 import { mapState } from 'vuex'
 export default {
     name: 'MokaWindowPreview',
@@ -53,7 +63,8 @@ export default {
         editScreenshot: true
     }),
     components: {
-        WhoobePreviewContextMenu , MokaEditorPreview , WhoobePreviewHtml , WhoobePreviewPrintscreen
+        WhoobePreviewContextMenu , MokaEditorPreview , WhoobePreviewHtml , WhoobePreviewPrintscreen ,
+        MokaSlider: ()=>import ( '@/components/editor/preview/moka.slider')
     },
     computed: {
         ...mapState ( ['editor'] ),
@@ -156,6 +167,7 @@ export default {
 
                 formData.append("file", resp )
                 formData.append("folder","preview")
+                formData.append("isPreview",true)
                 formData.append('thumbs',0)
                 formData.append('url','/uploads/preview/w-preview-' + this.$mapState().editor.component.name.replaceAll(' ','') + '.jpg')
                 this.$http.post("upload/file", 

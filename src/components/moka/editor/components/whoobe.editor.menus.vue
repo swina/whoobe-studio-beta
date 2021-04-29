@@ -1,5 +1,5 @@
 <template>
-    <div v-if="menu" class="w-full z-max bg-gray-400 text-black overflow-y-auto h-screen mb-2 shadow">
+    <div v-if="menu" class="w-full z-max bg-gray-400 text-black overflow-y-auto h-4/5 mb-2 shadow">
         <button @click="tab='items'" class="w-24" :class="tab==='items'?'bg-blue-400':''">Items</button>
         <button @click="tab='css'" class="w-24" :class="tab==='css'?'bg-blue-400':''">Customize</button>
         <button @click="tab='responsive'" class="w-24" :class="tab==='responsive'?'bg-blue-400':''">Responsive</button>
@@ -118,7 +118,7 @@
                 <textarea v-model="menu.css.container"/> -->
                 
             </div>
-            <div class="w-1/2 relative" v-if="currentIndex > -1 && subIndex > -1 && items[currentIndex].submenu[subIndex].blocks">
+            <div class="relative p-1 border" v-if="currentIndex > -1 && subIndex > -1 && items[currentIndex].submenu[subIndex].blocks" style="resize:both;overflow:auto;">
                 <div> 
                     <whoobe-container :doc="items[currentIndex].submenu[subIndex].blocks" :editor="false"/>
                     <i class="absolute top-0 right-0 z-2xtop cursor-pointer material-icons p-1 bg-gray-100 rounded-full" @click="copyToClipboard(items[currentIndex].submenu[subIndex].blocks)">file_copy</i>

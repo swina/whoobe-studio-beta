@@ -672,7 +672,7 @@ export default {
         let vm = this 
         this.current = this.moka.current
         window.addEventListener("keydown", e => {
-
+            console.log ( e.code )
             if ( e.altKey && e.code === 'KeyB' ){
                 this.doc && !this.doc.hasOwnProperty('slider') ?
                     vm.$emit('preview') :
@@ -737,7 +737,7 @@ export default {
             }
             if ( e.altKey && e.code === 'KeyD' ){
                 if ( this.editor.current  ){
-                    this.$emit('duplicate',this.editor.current)
+                    //this.$emit('duplicate',this.editor.current)
                 }
             }
 

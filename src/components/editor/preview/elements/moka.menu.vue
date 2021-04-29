@@ -1,5 +1,4 @@
 <template>
-<div v-if="el">
     <nav v-if="el.element === 'menu'" :class="menu_responsive(el) + ' z-top ' + el.css.align +  background(el)"> 
         <div menu_item v-for="(item,i) in el.items" :class="el.css.css  + ' cursor-pointer relative '" :key="el.id + '_' + i"> 
 
@@ -14,9 +13,9 @@
             </span>
             
             
-            <div :ref="'submenu_'+i" submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' fixed flex flex-col z-highest'" @mouseleave="menuover=-1">
+            <div :ref="'submenu_'+i" submenu v-if="item.submenu && item.submenu.length" :class="isOver(i) + ' ' + el.css.submenu + ' fixed flex flex-col z-highest'">
                 
-                <div v-if="item.submenu[0].blocks" :class="Object.values(item.submenu[0].blocks.css).join(' ')" :style="background(item.submenu[0].blocks)  + getPos(i)">
+                <div v-if="item.submenu[0].blocks" :class="Object.values(item.submenu[0].blocks.css).join(' ')" :style="background(item.submenu[0].blocks)  + getPos(i)"  @mouseleave="menuover=-1">
                     
                     <template v-for="block in item.submenu[0].blocks.blocks">
                         <moka-element
@@ -46,13 +45,7 @@
                 </div>
             </div>
         </div>
-        
-
-    </nav>
-    
-    <!-- responsive -->
-    
-    <i :class="'bi-list z-max fixed md:hidden top-0 left-0 m-1 text-5xl font-bold ' + el.css.css " v-if="el.element === 'menu' && el.responsive" @click="menu_show=!menu_show"></i>
+        <i :class="'bi-list z-max fixed md:hidden top-0 left-0 m-1 text-5xl font-bold ' + el.css.css " v-if="el.element === 'menu' && el.responsive" @click="menu_show=!menu_show"></i>
     <nav class="md:hidden fixed z-2xtop flex flex-col top-0 left-0 right-0 bottom-0 h-screen"  :class="responsive()" style="transition:all 1s linear;"> 
         <i :class="'bi-arrow-left moka-icons z-max mb-2 text-3xl ' + itemsCSS" v-if="el.element === 'menu' && el.responsive" @click="showmenu"></i>
         <div>
@@ -70,8 +63,12 @@
             </div>
         </div>
     </nav>
+
+    </nav>
     
-</div>
+    <!-- responsive -->
+    
+    
 </template>
 
 <script>
@@ -115,10 +112,17 @@ export default {
         getPos(i,e){
             if ( this.menuover === i ) {
                 let posX = this.$refs['submenu_' + i][0].getBoundingClientRect().x
+                let posY = this.$refs['submenu_' + i][0].getBoundingClientRect().y
                 let width = this.$refs['submenu_' + i][0].clientWidth
-                let available = window.innerWidth
-                if ( ( posX + width - available ) > 0 ){
-                    this.$refs['submenu_' + i][0].style.left = (available - width) + 'px'
+                let height = this.$refs['submenu_' + i][0].clientHeight
+                let availableX = window.innerWidth
+                let availableY = window.innerHeight
+                if ( ( posX + width - availableX ) > 0 ){
+                    this.$refs['submenu_' + i][0].style.left = (availableX - width) + 'px'
+                }
+                console.log ( availableY - height - 50 )
+                if ( ( posY + height - availableY ) > 0 ){
+                    this.$refs['submenu_' + i][0].style.transform = 'translateY(-110%)'//(availableY - height - 50 ) + 'px'
                 }
             }
         },

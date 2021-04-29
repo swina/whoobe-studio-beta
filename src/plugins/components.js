@@ -117,6 +117,12 @@ const __components = {
             size: 'md',
             position: 'modal-top-right'
         },
+        media_gallery : {
+            title: 'Media Gallery',
+            component: 'media/media.gallery',
+            size: 'md',
+            position : 'modal-top-left'
+        },
         filerobot :{
             title: 'Image Editor by Filerobot',
             component: 'media/editor/whoobe.filerobot',
@@ -187,8 +193,8 @@ const __components = {
             component: 'editor/settings/moka.editor.popup.settings',
         },
         slidersettings: {
-            size: 'md',
-            title: 'Slider settings',
+            size: 'lg',
+            title: 'Settings',
             position: 'modal',
             component: 'editor/render/moka.editor.slider'
         },

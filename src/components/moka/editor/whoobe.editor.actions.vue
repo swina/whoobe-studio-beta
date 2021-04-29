@@ -85,12 +85,12 @@ export default {
                     comp = this.actions.media.component
                 }
                 if ( this.editor.action === 'block_edit' && current.tag === 'element' && ( current.element === 'div' || current.element === 'p' || current.element === 'h' || current.element === 'span' ) ){
-                    comp = 'moka/editor/components/editing/whoobe.editor.multi.editing'
+                    comp = 'blocks/editor/components/editing/whoobe.editor.multi.editing'
                     // this.modal.size = 'lg'
                     // this.modal.title = 'Edit content'
                 }
                 if ( current && ( current.tag === 'icon' || current.tag === 'icon_bt') ) {
-                    comp = 'moka/editor/components/editing/whoobe.editor.multi.editing'
+                    comp = 'blocks/editor/components/editing/whoobe.editor.multi.editing'
                     // this.modal.size = 'md'
                     // this.modal.title = 'Edit Icon'
                 }

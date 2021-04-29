@@ -11,7 +11,8 @@
                 <div>{{ plugin.general.name }}</div>
                 <div class="text-sm text-center">{{ plugin.general.description || '   '}}</div>
                 <button :class="plugin.general.enabled?'danger':'success'">{{ plugin.general.enabled ? 'Disable' : 'Enable' }}</button>
-                <i class="absolute top-0 right-0 m-1 material-icons my-2" @click="current=plugin,pluginSettings=!pluginSettings">build</i>
+                <i class="material-icons absolute right-0 top-0 m-1 cursor-pointer text-gray-300" @click="removePlugin(plugin)">delete</i>
+                <i class="absolute bottom-0 right-0 m-1 material-icons my-2" @click="current=plugin,pluginSettings=!pluginSettings">build</i>
             </div>
             </template>
         </div>
@@ -21,7 +22,7 @@
             v-if="pluginSettings"
             @close="pluginSettings=!pluginSettings"
             @click_0="pluginSettings=!pluginSettings"
-            @click_1="savePlugin()">
+            @click_1="savePlugin(),pluginSettings=!pluginSettings">
             <div slot="title">{{ current.general.name || 'New Plugin' }} settings</div>
             <div slot="content" class="relative h-3/5 p-2 w-full ">
                 <div class="absolute overflow-y-auto h-full w-11/12 m-2 bg-white">
@@ -209,6 +210,13 @@ export default {
                 })
             }
             return 
+        },
+        removePlugin(plugin){
+            this.$api.service('plugins').remove(plugin._id).then ( res => {
+                this.$api.service('plugins').find ().then ( response=> {
+                    this.plugins = response.data
+                })
+            })
         }
     },
     mounted(){

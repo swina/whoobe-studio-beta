@@ -29,11 +29,21 @@
                 </div>
             </transition>
             <transition name="fade">
-                <div class="nuxpresso-modal text-xs p-4 z-50 w-1/3 border" v-if="grids">
+                <moka-modal
+                    v-if="grids"
+                    size="lg"
+                    @close="grids=!grids"
+                    buttons="none">
+                    <div slot="title">Grid Templates</div>
+                    <div slot="content">
+                        <moka-grids @grid="addGrid" :element="selected" :loop="isloop"/>
+                    </div>
+                </moka-modal>
+                <!-- <div class="nuxpresso-modal text-xs p-4 z-50 w-1/3 border" v-if="grids">
                     <i class="material-icons absolute right-0 top-0" @click="grids=!grids">close</i>
                     <moka-grids @grid="addGrid" :element="selected" :loop="isloop"/>
                     
-                </div>
+                </div> -->
             </transition>
             
         <transition name="fade">

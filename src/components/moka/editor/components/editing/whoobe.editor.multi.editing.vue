@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import WhoobeQuillEditor from '@/components/editor/render/moka.text.editor' //moka/editor/editing/whoobe.editor.quill.editor'
+import WhoobeQuillEditor from '@/components/editor/render/moka.text.editor' //blocks/editor/editing/whoobe.editor.quill.editor'
 import WhoobeIconEditor from '@/components/editor/render/moka.customize.icon'
 export default {
     components: {

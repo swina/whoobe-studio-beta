@@ -90,18 +90,22 @@ export default {
         templateSettings: false,
         addType: false,
         disableBodyCss: false,
-        fontFamily:''
+        fontFamily:'',
+        component: null
     }),
     computed:{
         editor(){
             return this.$mapState().editor
         },
-        component(){
-            return this.$mapState().editor.component
-        },
+        // component(){
+        //     return this.$mapState().editor.component
+        // },
         datastore(){
             return this.$mapState().datastore
         }
+    },
+    mounted(){
+        this.component = this.$mapState().editor.component
     }
 }
 </script>

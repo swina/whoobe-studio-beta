@@ -1,9 +1,9 @@
 <template>
-    <div :class="'fixed z-2xtop bg-white top-0 left-0 w-11/12 ml-12  mr-10 mb-10 mt-8 ' + $attrs.position">
+    <div :class="'fixed z-2xtop bg-white shadow-lg top-0 left-0 w-2xwide h-90 mx-12 mt-10 ' + $attrs.position">
         <div class="absolute z-highest top-0 right-0 h-8 px-2 flex flex-row items-center text-gray-400 text-xls" >
             <i class="material-icons" @click="$emit('close')">close</i>
         </div>
-        <div class="bg-black text-white text-sm flex flex-row items-center bg-gray-800 text-white  rounded-tl rounded-tr px-2 py-1">
+        <div class="text-sm flex flex-row items-center bg-blue-800 text-white rounded-tl rounded-tr px-2 py-1">
             <slot name="title"></slot>
         </div>
         <div class="relative overflow-y-auto w-full">

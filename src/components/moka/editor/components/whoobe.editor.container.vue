@@ -4,7 +4,8 @@
         v-if="doc"
         :level="$attrs.level" 
         :id="doc.id"  
-        :class="'p-2 fill-current ' + classe(doc.css)" :style="doc.style + ' ' +  background(doc)" @dblclick="doc.blocks.length===0?$action('addcomponent'):null">
+        class="p-2 fill-current"
+        :class="classe(doc.css)" :style="doc.style + ' ' +  background(doc)" @dblclick="doc.blocks.length===0?$action('addcomponent'):null">
         <div v-if="doc.blocks && !doc.blocks.length && !doc.image" class="text-xs">Dblclick here to add an element</div>
         <div videobg v-if="doc.image && (doc.image.ext==='.mp4' || doc.image.ext==='webm' || doc.image.url.indexOf('.mp4') > -1)" :class="'fixed z-0 ' + doc.css.css">  
             <video playsinline  class="object-contain" :autoplay="false" :loop="false">
@@ -40,7 +41,7 @@
                 :index="b"
                 :level="parseInt($attrs.level)+1" 
                 :zi="$attrs.zi + parseInt($attrs.level)"
-                v-if="block && block.hasOwnProperty('blocks') && !block.hasOwnProperty('items')  && !block.hasOwnProperty('slider') && !block.hasOwnProperty('blocks_flip')" 
+                v-if="block && block.hasOwnProperty('blocks') && !block.hasOwnProperty('items')  && !block.hasOwnProperty('blocks_flip')" 
                 :doc="block"
                 @copy="$emit('copy')"/>
 
@@ -51,7 +52,7 @@
                 @remove="doc.blocks.splice(b,1)"/>-->
 
               
-            <moka-slides-container
+            <!-- <moka-slides-container
                 :key="block.id"
                 :component="$attrs.component"
                 :top="false"
@@ -62,7 +63,7 @@
                 :level="parseInt($attrs.level)+1" 
                 :zi="$attrs.zi + parseInt($attrs.level)"
                 v-if="block && block.hasOwnProperty('slider') && !block.hasOwnProperty('blocks_flip')" 
-                :doc="block"/>
+                :doc="block"/> -->
                 
             <moka-editor-flipbox
                 v-if="block.hasOwnProperty('blocks_flip')"
@@ -129,7 +130,7 @@
 
 <script>
 import MokaElement from '@/components/editor/render/moka.editor.element'
-import WhoobeElement from '@/components/moka/editor/components/whoobe.editor.element'
+import WhoobeElement from './whoobe.editor.element'
 import MokaSlider from '@/components/editor/preview/moka.slider'
 //import MokaEditorSlides from '@/components/editor/render/moka.editor.slides'
 import MokaEditorFlipbox from '@/components/editor/render/moka.editor.flipbox'
@@ -181,7 +182,8 @@ export default {
         classe(css){
             if ( !css ) return 'relative'
             let cl = css.hasOwnProperty('css') ? css.css + ' ' + css.container : css
-            cl.replace('z-','')
+            //cl.replace('z-','')
+            cl += this.$attrs.level === 0 ? ' z-1 ' : ' z-' + this.$attrs.level
             cl.indexOf('absolute') > -1 ? cl += ' absolute' : cl += ' relative'
             return cl.replace('modal','').replace('hidden','')
         },
@@ -266,6 +268,7 @@ export default {
             if ( !this.view3D ){
                 //this.doc.style = this.doc.style.replace('transform:','')
             }
+              
             let color = 'border-blue-500 '
             doc && !doc.hasOwnProperty('type') ? color = 'border-red-500 ' : null
             doc && doc.hasOwnProperty('slider') ? color = 'border-yellow-500 ' : null
@@ -273,7 +276,7 @@ export default {
             doc && doc.hasOwnProperty('plugin') ? color = 'border-orange-600 ' : null
             doc.type === 'flex' ?
                 doc.hasOwnProperty('popup') ? color = 'border-teal-200 border-2 ' :
-                    color = 'border-red-500 border-2 bg-gray-300 bg-opacity-25 ' : ''
+                    color = 'border-red-500 border-2 bg-gray-300 bg-opacity-0 ' : ''
             if ( this.moka && this.moka.selected ) {
                 return this.moka.selected === id ? color + 'opacity-100 ' : color + 'opacity-0 hover:opacity-100'
             } else {

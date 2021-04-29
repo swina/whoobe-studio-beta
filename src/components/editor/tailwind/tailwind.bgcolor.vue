@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import classes from '@/plugins/tw.classes'
+import twclasses from '@/plugins/tw.classes'
 import palette from '@/components/palette'
 export default {
     name: 'MokaTailwindBGColor',
@@ -28,14 +28,13 @@ export default {
             hover: '',
         },
         color_over: '',
+        colors: null
     }),
     props: ['css','attr'],
     computed:{
-        colors(){
-            return classes[this.attr]
-        },
+        
         context(){
-            return 'bg-'
+            return this.attr + '-' //bg-'
         }
     },
     methods:{
@@ -88,6 +87,7 @@ export default {
     },
     mounted(){
         if ( !this.css || !this.css.length ) return
+        this.colors = twclasses.colors
         this.allCss = this.css
         let classes = this.allCss.split(' ')
         classes.forEach ( cl => {

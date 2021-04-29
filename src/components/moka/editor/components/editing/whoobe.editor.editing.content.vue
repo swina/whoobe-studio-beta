@@ -68,16 +68,21 @@
         </transition> -->
 
         <!-- icon options -->
-        <div class="bg-gray-200 cursor-pointer border-b hover:bg-black hover:text-white text-gray-800 px-1 mb-0" v-if="$attrs.element.tag==='icon' || $attrs.element.tag === 'icon_bt'" @click="setOpt('icon')">
-            Icon
+
+        <div class="bg-gray-800 cursor-pointer border-b border-gray-700 hover:bg-gray-700 hover:text-white text-gray-400 p-1 mb-0 text-xs" v-if="$attrs.element.tag==='icon' || $attrs.element.tag === 'icon_bt'" @click="setOpt('icon')">
+            Icon <i class="material-icons absolute right-0 mr-2">chevron_right</i>
         </div>
         <!-- icon settings -->
-        <moka-icons 
-            v-if="label==='icon'" 
-            :tag="$attrs.element.tag" 
-            :icon="$attrs.element.content" 
-            v-model="$attrs.element.content"/>
-        
+        <transition name="slideright">
+            <div v-if="label==='icon'" class="flex flex-col h-full text-gray-500 bg-gray-800 w-full absolute top-0 right-0 z-2xtop">
+                <div class="bg-orange-400 text-black  flex flex-row p-1 items-center capitalize" @click="label=''"><i class="material-icons absolute right-0">chevron_right</i>Icon</div>
+                <moka-icons 
+                    v-if="label==='icon'" 
+                    :tag="$attrs.element.tag" 
+                    :icon="$attrs.element.content" 
+                    v-model="$attrs.element.content"/>
+            </div>
+        </transition>
         <!-- popup -->
         <div v-if="$attrs.element.hasOwnProperty('popup')" class="flex flex-col">
             <div class="bg-gray-200 cursor-pointer border-b hover:bg-black hover:text-white text-gray-900 px-1" @click="setOpt('popup')"><label>Modal Popup</label></div>
